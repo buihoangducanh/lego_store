@@ -20,40 +20,26 @@ if ($role_id == 1) {
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://use.fontawesome.com/2145adbb48.js"></script>
-    <script src="https://kit.fontawesome.com/a42aeb5b72.js" crossorigin="anonymous"></script>
+    <?php
+    include 'inc/metadata_libs.php'
+    ?>
     <title>Chỉnh sửa danh mục</title>
 </head>
 
 <body>
-    <nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i class="fas fa-bars"></i>
-        </label>
-        <label class="logo">ADMIN</label>
-        <ul>
-            <li><a href="../index.php">Lego Store</a></li>
-            <li><a href="productlist.php">Quản lý Sản phẩm</a></li>
-            <li><a href="categoriesList.php" class="active">Quản lý danh mục</a></li>
-            <li><a href="orderlist.php">Quản lý Đơn hàng</a></li>
-        </ul>
-    </nav>
+    <?php
+    include 'inc/admin_header.php'
+    ?>
     <div class="title">
         <h1>Chỉnh sửa danh mục</h1>
     </div>
-    <div class="container">
+    <div class="container d-flex align-items-center justify-content-center">
         <?php
         if (isset($result)) {
             echo $result;
         }
         ?>
-        <div class="form-add">
+        <div class="form-add d-flex align-items-center" style="background-color: unset;">
             <form action="edit_category.php?id=<?= $categoryUpdate['id'] ?>" method="post">
                 <input type="text" hidden name="id" style="display: none;" value="<?= (isset($_GET['id']) ? $_GET['id'] : $categoryUpdate['id']) ?>">
                 <label for="name">Tên danh mục</label>
@@ -64,10 +50,10 @@ if ($role_id == 1) {
         </div>
     </div>
     </div>
-    
-    <footer>
-        <p class="copyright">STORENOW @ 2021</p>
-    </footer>
+
+    <?php
+    include '../inc/footer.php'
+    ?>
 </body>
 
 </html>

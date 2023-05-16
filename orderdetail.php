@@ -25,30 +25,32 @@ $result = $orderDetails->getOrderDetails($_GET['orderId']);
     <?php include 'inc/header.php' ?>
     <section class="banner"></section>
     <div class="featuredProducts">
-        <h1>Chi tiết đơn hàng <?= $_GET['orderId'] ?></h1>
+        <h1 style="color: black; padding-top: 50px">Chi tiết đơn hàng <?= $_GET['orderId'] ?></h1>
     </div>
-    <div class="container-single">
-        <table class="order">
-            <tr>
-                <th>STT</th>
-                <th>Tên sản phẩm</th>
-                <th>Hình ảnh</th>
-                <th>Đơn giá</th>
-                <th>Số lượng</th>
-            </tr>
-            <?php $count = 1;
-            foreach ($result as $key => $value) { ?>
+    <div style="min-height: 50vh;">
+        <div class="container-single">
+            <table class="order">
                 <tr>
-                    <td><?= $count++ ?></td>
-                    <td><?= $value['productName'] ?></td>
-                    <td><img class="image-cart" src="admin/uploads/<?= $value['productImage'] ?>" alt=""></td>
-                    <td><?= number_format($value['productPrice'], 0, '', ',') ?>VND</td>
-                    <td><?= $value['qty'] ?></td>
+                    <th>STT</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Hình ảnh</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
                 </tr>
-            <?php }
-            ?>
-        </table>
+                <?php $count = 1;
+                foreach ($result as $key => $value) { ?>
+                    <tr>
+                        <td><?= $count++ ?></td>
+                        <td><?= $value['productName'] ?></td>
+                        <td><img class="image-cart" src="admin/uploads/<?= $value['productImage'] ?>" alt=""></td>
+                        <td><?= number_format($value['productPrice'], 0, '', ',') ?>VND</td>
+                        <td><?= $value['qty'] ?></td>
+                    </tr>
+                <?php }
+                ?>
+            </table>
 
+        </div>
     </div>
     </div>
 </body>

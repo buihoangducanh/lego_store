@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Mitr');
+@import url("https://fonts.googleapis.com/css2?family=Mitr");
 
 * {
   padding: 0;
@@ -19,13 +19,6 @@ nav {
   background: #c00277;
   height: 80px;
   width: 100%;
-}
-
-label.logo {
-  color: white;
-  font-size: 35px;
-  line-height: 80px;
-  padding: 0 35px;
 }
 
 nav ul {
@@ -50,141 +43,197 @@ nav ul li a {
 }
 
 .active,
-a:hover{
+a:hover {
   background-color: white;
   color: mediumvioletred;
 }
 
-.checkbtn{
-    font-size: 30px;
-    color: white;
-    float: right;
-    line-height: 80px;
-    margin-right: 40px;
-    cursor: pointer;
-    display: none;
+.checkbtn {
+  font-size: 30px;
+  color: white;
+  float: right;
+  line-height: 80px;
+  margin-right: 40px;
+  cursor: pointer;
+  display: none;
 }
 
-#check{
-    display: none;
+#check {
+  display: none;
 }
 
-.container{
+.container {
   margin-top: 30px;
-  height: auto;
+  min-height: 50vh;
+  max-width: 90vw;
 }
 
-.addNew{
+.addNew {
   margin-top: 30px;
 }
 
-.title{
-    background-color: white;
+.title {
+  background-color: white;
+  margin-top: 80px;
+  padding: 30px;
+  text-align: center;
 }
-
 footer {
   padding: 30px 0;
-  background-color:white;
+  background-color: rgb(32, 29, 72);
 }
 
-footer .copyright{
-  margin-top: 15px;
-  text-align: center;
-  font-size: 12px;
-  color: gray;
-}
-
-.list{
-    width: 100%;
-    background-color: ghostwhite;
-    padding: 10px;
-    border-collapse: collapse;
-  }
-
-  .image-cart{
-    height: 100px;
-    width: 100px;
-  }
-
-  th{
-    background-color:  plum;
-    border: 1px solid mediumvioletred;
-  }
-  
-  td{
-    border: 1px solid mediumvioletred;
-    text-align: center;
-  }
-
-  .product-list{
-      padding-top: 1000px;
-  }
-
-  .form-add{
-    border-radius: 5px;
-    background-color: #f2f2f2;
-    padding: 10px 400px;
-  }
-
-  input[type=text], input[type=file], input[type=number], textarea, select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  input[type=submit] {
-    width: 100%;
-    background-color: mediumvioletred;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  input[type=submit]:hover{
-    background-color: deeppink;
-  }
-
-  .success{
-    color: green;
-  }
-
-  .error{
-    color: red;
-  }
-
-  .tabcontent{
-    height: 450px;
-  }
-
-  .tablinks{
-    width: 150px;
-    background-color: white;
-    color: mediumvioletred;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: 2px solid mediumvioletred;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  .tablinks:hover {
-    background-color: mediumvioletred;
-    color: white;
-  }
-
-.pagination{
-  text-align: center;
-}
-
-.pagination a.active {
-  background-color: dodgerblue;
+footer .social {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding-bottom: 25px;
   color: white;
+}
+footer .social a:hover {
+  background-color: unset;
+}
+footer .social a {
+  font-size: 24px;
+  display: inline-block;
+  text-align: center;
+  border-radius: 50%;
+  margin: 0 8px;
+  color: white;
+}
+
+footer ul {
+  margin-top: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 18px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+footer ul a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+footer ul li {
+  display: inline;
+  padding: 0 15px;
+}
+
+.list {
+  width: 100%;
+  background-color: ghostwhite;
+  padding: 10px;
+  border-collapse: collapse;
+}
+
+.image-cart {
+  height: 100px;
+  width: 100px;
+}
+
+th {
+  background-color: plum;
+  border: 1px solid mediumvioletred;
+}
+
+td {
+  border: 1px solid mediumvioletred;
+  text-align: center;
+}
+
+.product-list {
+  padding-top: 1000px;
+}
+
+.form-add {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 10px 400px;
+}
+
+input[type="text"],
+input[type="file"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type="submit"] {
+  width: 100%;
+  background-color: mediumvioletred;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: deeppink;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+.tabcontent {
+  height: 450px;
+}
+
+.tablinks {
+  width: 150px;
+  background-color: white;
+  color: mediumvioletred;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: 2px solid mediumvioletred;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.tablinks:hover {
+  background-color: mediumvioletred;
+  color: white;
+}
+
+.pagination {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.pagination a {
+  text-decoration: none;
+  color: black;
+  display: block;
+  padding: 5px 15px;
+}
+.pagination a.active {
+  background-color: black;
+  color: white;
+}
+div.logo {
+  width: 80px;
+  display: inline-block;
+  margin-left: 40px;
+  cursor: pointer;
+}
+.logo img {
+  width: 100%;
 }

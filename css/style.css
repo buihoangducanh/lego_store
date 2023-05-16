@@ -224,13 +224,6 @@ footer ul li {
   padding: 0 15px;
 }
 
-footer .copyright {
-  margin-top: 15px;
-  text-align: center;
-  font-size: 12px;
-  color: gray;
-}
-
 .container-single {
   display: flex;
   margin: 30px 100px;
@@ -394,17 +387,20 @@ input[type="number"] {
 }
 
 .pagination {
+  margin-top: 30px;
+  display: flex;
   justify-content: center;
-  margin-top: 100px;
-  text-align: center;
+  gap: 20px;
 }
-
+.pagination a {
+  text-decoration: none;
+  color: black;
+  display: block;
+  padding: 5px 15px;
+}
 .pagination a.active {
-  background-color: dodgerblue;
+  background-color: black;
   color: white;
-}
-.productName h3 {
-  height: 58px;
 }
 
 .black-background {

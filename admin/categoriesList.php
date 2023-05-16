@@ -40,52 +40,36 @@ $pageCount = $categories->getCountPaging();
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://use.fontawesome.com/2145adbb48.js"></script>
-    <script src="https://kit.fontawesome.com/a42aeb5b72.js" crossorigin="anonymous"></script>
+    <?php include 'inc/metadata_libs.php' ?>
     <title>Danh sách danh mục</title>
 </head>
 
 <body>
-    <nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i class="fas fa-bars"></i>
-        </label>
-        <label class="logo">ADMIN</label>
-        <ul>
-            <li><a href="../index.php">Lego Store</a></li>
-            <li><a href="productlist.php" >Quản lý Sản phẩm</a></li>
-            <li><a href="categoriesList.php" class="active">Quản lý danh mục</a></li>
-            <li><a href="orderlist.php" id="order">Quản lý Đơn hàng</a></li>
-        </ul>
-    </nav>
+    <?php
+    include 'inc/admin_header.php'
+    ?>
     <div class="title">
         <h1>Danh sách danh mục</h1>
     </div>
     <div class="addNew">
-        <a href="add_category.php">Thêm mới</a>
+        <a class="btn btn-dark ml-5" href="add_category.php">Thêm mới</a>
     </div>
     <div class="container">
         <?php $count = 1;
         if ($list) { ?>
             <table class="list">
                 <tr>
-                    <th>STT</th>
-                    <th>Tên danh mục</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th class="text-center p-2">STT</th>
+                    <th class="text-center p-2">Tên danh mục</th>
+                    <th class="text-center p-2">Trạng thái</th>
+                    <th class="text-center p-2">Thao tác</th>
                 </tr>
                 <?php foreach ($list as $key => $value) { ?>
                     <tr>
                         <td><?= $count++ ?></td>
                         <td><?= $value['name'] ?></td>
                         <td><?= ($value['status']) ? "Active" : "Block" ?></td>
-                        <td>
+                        <td class="p-2">
                             <a href="edit_category.php?id=<?= $value['id'] ?>">Xem/Sửa</a>
                             <?php
                             if ($value['status']) { ?>
@@ -125,10 +109,10 @@ $pageCount = $categories->getCountPaging();
         </div>
     </div>
     </div>
-    
-    <footer>
-        <p class="copyright">STORENOW @ 2021</p>
-    </footer>
+
+    <?php
+    include '../inc/footer.php'
+    ?>
 </body>
 
 </html>
