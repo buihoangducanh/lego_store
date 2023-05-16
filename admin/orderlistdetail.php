@@ -36,11 +36,11 @@ $order_result = $order->getById($result[0]['orderId']);
         if ($result) { ?>
             <table class="list">
                 <tr>
-                    <th>STT</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Hình ảnh</th>
-                    <th>Đơn giá</th>
-                    <th>Số lượng</th>
+                    <th class="text-center p-2">STT</th>
+                    <th class="text-center p-2">Tên sản phẩm</th>
+                    <th class="text-center p-2">Hình ảnh</th>
+                    <th class="text-center p-2">Đơn giá</th>
+                    <th class="text-center p-2">Số lượng</th>
                 </tr>
                 <?php $count = 1;
                 foreach ($result as $key => $value) { ?>
