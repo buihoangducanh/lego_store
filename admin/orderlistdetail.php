@@ -57,7 +57,7 @@ $order_result = $order->getById($result[0]['orderId']);
             </table>
             <?php
             if ($order_result['status'] == 'Processing') { ?>
-                <a href="processed_order.php?orderId=<?= $_GET['orderId'] ?>">Xác nhận</a>
+                <a class="btn btn-dark mt-4" href="processed_order.php?orderId=<?= $_GET['orderId'] ?>">Xác nhận</a>
             <?php }
             ?>
         <?php } else { ?>
