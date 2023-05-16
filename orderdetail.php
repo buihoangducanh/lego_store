@@ -28,6 +28,13 @@ $result = $orderDetails->getOrderDetails($_GET['orderId']);
         <h1 style="color: black; padding-top: 50px">Chi tiết đơn hàng ID <?= $_GET['orderId'] ?></h1>
     </div>
     <div style="min-height: 50vh;">
+        <div style="padding: 20px 100px">
+            <p>Tên khách hàng : <span>Nguyễn Văn Nam</span></p>
+            <p>Địa chỉ : <span>ABC</span></p>
+            <p>Số điện thoại : <span>ABC</span></p>
+            <p>Tổng giá trị đơn hàng : <span>100000</span>VND</p>
+
+        </div>
         <div class="container-single">
             <table class="order">
                 <tr>

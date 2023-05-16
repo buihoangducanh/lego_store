@@ -29,9 +29,16 @@ $order_result = $order->getById($result[0]['orderId']);
 <body>
     <?php include 'inc/admin_header.php' ?>
     <div class="title">
-        <h1>Chi tiết đơn đặt hàng <?= $order_result['id'] ?></h1>
+        <h1>Chi tiết đơn đặt hàng ID <?= $order_result['id'] ?></h1>
     </div>
     <div class="container">
+        <div style="padding: 20px 10px">
+            <p>Tên khách hàng : <span>Nguyễn Văn Nam</span></p>
+            <p>Địa chỉ : <span>ABC</span></p>
+            <p>Số điện thoại : <span>ABC</span></p>
+            <p>Tổng giá trị đơn hàng : <span>100,000</span> VND</p>
+
+        </div>
         <?php
         if ($result) { ?>
             <table class="list">
@@ -48,7 +55,7 @@ $order_result = $order->getById($result[0]['orderId']);
                         <td><?= $count++ ?></td>
                         <td><?= $value['productName'] ?></td>
                         <td><img class="image-cart" src="uploads/<?= $value['productImage'] ?>" alt=""></td>
-                        <td><?= $value['productPrice'] ?></td>
+                        <td><?= number_format($value['productPrice'], 0, '', ',') ?> VND</td>
                         <td><?= $value['qty'] ?></td>
 
                     </tr>
@@ -65,7 +72,7 @@ $order_result = $order->getById($result[0]['orderId']);
         <?php }
         ?>
     </div>
-    </div>
+
 
     <?php
     include '../inc/footer.php'
