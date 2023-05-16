@@ -59,12 +59,12 @@ $result = $order->getOrderByUser();
             <?php if ($result) { ?>
                 <table class="order">
                     <tr>
-                        <th>STT</th>
-                        <th>Mã đơn hàng</th>
-                        <th>Ngày đặt</th>
-                        <th>Ngày giao</th>
-                        <th>Tình trạng</th>
-                        <th>Thao tác</th>
+                        <th class="text-center p-2">STT</th>
+                        <th class="text-center p-2">Mã đơn hàng</th>
+                        <th class="text-center p-2">Ngày đặt</th>
+                        <th class="text-center p-2">Ngày giao</th>
+                        <th class="text-center p-2">Tình trạng</th>
+                        <th class="text-center p-2">Thao tác</th>
                     </tr>
                     <?php $count = 1;
                     foreach ($result as $key => $value) { ?>

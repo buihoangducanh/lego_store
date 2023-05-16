@@ -25,17 +25,17 @@ $result = $orderDetails->getOrderDetails($_GET['orderId']);
     <?php include 'inc/header.php' ?>
     <section class="banner"></section>
     <div class="featuredProducts">
-        <h1 style="color: black; padding-top: 50px">Chi tiết đơn hàng <?= $_GET['orderId'] ?></h1>
+        <h1 style="color: black; padding-top: 50px">Chi tiết đơn hàng ID <?= $_GET['orderId'] ?></h1>
     </div>
     <div style="min-height: 50vh;">
         <div class="container-single">
             <table class="order">
                 <tr>
-                    <th>STT</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Hình ảnh</th>
-                    <th>Đơn giá</th>
-                    <th>Số lượng</th>
+                    <th class="text-center p-2">STT</th>
+                    <th class="text-center p-2">Tên sản phẩm</th>
+                    <th class="text-center p-2">Hình ảnh</th>
+                    <th class="text-center p-2">Đơn giá</th>
+                    <th class="text-center p-2">Số lượng</th>
                 </tr>
                 <?php $count = 1;
                 foreach ($result as $key => $value) { ?>

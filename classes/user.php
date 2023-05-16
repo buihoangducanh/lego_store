@@ -9,9 +9,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 ?>
 
 <?php
-/**
- * 
- */
+
 class user
 {
 	private $db;
@@ -29,7 +27,7 @@ class user
 			Session::set('user', true);
 			Session::set('userId', $value['id']);
 			Session::set('role_id', $value['role_id']);
-			if($value['role_id'] == 1)
+			if ($value['role_id'] == 1)
 				header("Location:admin/indexadmin.php");
 			else
 				header("Location:index.php");
