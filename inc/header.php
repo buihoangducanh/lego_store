@@ -9,6 +9,9 @@
                                                 echo 'class="active"';
                                             } ?>>Sản phẩm</a></li>
             <?php if (isset($_SESSION['user']) && $_SESSION['user']) { ?>
+                <li><a href="edit_profile.php" id="edit_profile" <?php if (basename($_SERVER['PHP_SELF']) == 'edit_profile.php') {
+                                                                        echo 'class="active"';
+                                                                    } ?>>Chỉnh sửa thông tin</a></li>
                 <li><a href="logout.php" id="signin">Đăng xuất</a></li>
             <?php } else { ?>
                 <li><a href="register.php" id="signup" <?php if (basename($_SERVER['PHP_SELF']) == 'register.php') {

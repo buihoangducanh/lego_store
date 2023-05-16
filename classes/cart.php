@@ -8,9 +8,7 @@ include_once($filepath . '/../classes/product.php');
 
  
 <?php
-/**
- * 
- */
+
 class cart
 {
     private $db;

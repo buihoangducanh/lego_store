@@ -19,24 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <!-- <nav>
-        <label class="logo">LEGO</label>
-        <ul>
-            <li><a href="index.php">Trang chủ</a></li>
-            <li><a href="productList.php">Sản phẩm</a></li>
-            <li><a href="register.php" id="signup">Đăng ký</a></li>
-            <li><a href="login.php" id="signin" class="active">Đăng nhập</a></li>
-            <li><a href="order.php" id="order">Đơn hàng</a></li>
-            <li>
-                <a href="checkout.php">
-                    <i class="fa fa-shopping-bag"></i>
-                    <span class="sumItem">
-                        0
-                    </span>
-                </a>
-            </li>
-        </ul>
-    </nav> -->
+
 
     <?php
 
