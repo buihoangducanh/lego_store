@@ -2,6 +2,7 @@
 $filepath = realpath(dirname(__FILE__));
 include($filepath . '/../config/config.php'); ?>
 
+
 <?php
 class Database extends PDO
 {
