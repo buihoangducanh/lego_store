@@ -43,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <label for="repassword">Nhập lại mật khẩu</label>
                     <input type="password" id="repassword" name="repassword" required placeholder="Nhập lại mật khẩu..." oninput="check(this)">
+                    <label for="phoneNumber">Số điện thoại</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Số điện thoại..." required>
 
                     <label for="address">Địa chỉ</label>
                     <textarea name="address" id="address" cols="30" rows="5" required></textarea>
@@ -67,6 +69,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             input.setCustomValidity('');
         }
     }
+    // Lấy đối tượng input số điện thoại
+    var phoneNumberInput = document.getElementById('phoneNumber');
+
+    // Sử dụng biểu thức chính quy để kiểm tra số điện thoại
+    var phoneNumberPattern = /^\d{10}$/;
+
+    // Lắng nghe sự kiện submit form
+    document.querySelector('form').addEventListener('submit', function(event) {
+        // Kiểm tra giá trị của input số điện thoại
+        if (!phoneNumberPattern.test(phoneNumberInput.value)) {
+            // Nếu giá trị không hợp lệ, ngăn chặn sự kiện submit form và hiển thị thông báo lỗi
+            event.preventDefault();
+            alert('Số điện thoại không hợp lệ');
+        }
+    });
 </script>
 
 </html>
