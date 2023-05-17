@@ -46,10 +46,10 @@ class user
 		$email = $data['email'];
 		$dob = $data['dob'];
 		$address = $data['address'];
+		$phoneNumber = $data['phoneNumber'];
 		$password = md5($data['password']);
-		// admin_role=1
-		// user_role= 2
 		$user_role_id = 2;
+
 		$check_email = "SELECT * FROM users WHERE email='$email' LIMIT 1";
 		$conn = connectDB();
 
@@ -58,14 +58,15 @@ class user
 			return 'Email đã tồn tại!';
 		} else {
 			// Thực hiện thêm bản ghi mới vào CSDL
-			$insert_query = "INSERT INTO users (fullName, email, dob, address, password,role_id) VALUES ('$fullName', '$email', '$dob', '$address', '$password','$user_role_id')";
+			$insert_query = "INSERT INTO users (fullName, email, dob, address, password,role_id,phone_number) VALUES ('$fullName', '$email', '$dob', '$address', '$password','$user_role_id','$phoneNumber')";
 			$result_insert = mysqli_query($conn, $insert_query);
 
-			$conn->close();
-			if ($result_insert) {
-				return true;
+			if ($result_insert === false) {
+				// Có lỗi xảy ra khi thêm bản ghi mới
+				return 'Có lỗi khi đăng ký tài khoản';
 			} else {
-				return false;
+				// Thêm bản ghi mới thành công
+				return true;
 			}
 		}
 	}

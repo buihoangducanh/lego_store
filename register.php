@@ -5,9 +5,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sử dụng Prepared Statements để tránh tấn công SQL Injection
 
     $result = user::insert($_POST);
-    if ($result == true) {
+    if ($result === true) {
         // Hiển thị thông báo JavaScript và chuyển hướng trang
         echo "<script>alert('Đăng ký thành công!'); window.location.href='./login.php';</script>";
+    } else {
+        // Hiển thị thông báo lỗi
+        echo "<script>alert('$result');</script>";
     }
 }
 ?>
