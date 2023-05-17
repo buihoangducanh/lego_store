@@ -1,11 +1,13 @@
 <?php
 include 'classes/user.php';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $user = new user();
-    $result = $user->insert($_POST);
+    // Sử dụng Prepared Statements để tránh tấn công SQL Injection
+
+    $result = user::insert($_POST);
     if ($result == true) {
-        $userId = $user->getLastUserId();
-        header("Location:./confirm.php?id=" . $userId['id'] . "");
+        // Hiển thị thông báo JavaScript và chuyển hướng trang
+        echo "<script>alert('Đăng ký thành công!'); window.location.href='./login.php';</script>";
     }
 }
 ?>
