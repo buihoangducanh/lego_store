@@ -1,14 +1,10 @@
 <?php
 include_once 'lib/session.php';
 Session::checkSession('client');
-include_once 'classes/cart.php';
+
 include_once 'classes/orderDetails.php';
 
-$cart = new cart();
-$orderDetails = new orderDetails();
-
-$totalQty = $cart->getTotalQtyByUserId();
-$result = $orderDetails->getOrderDetails($_GET['orderId']);
+$result = orderDetails::getOrderDetails($_GET['orderId']);
 ?>
 
 <!DOCTYPE html>

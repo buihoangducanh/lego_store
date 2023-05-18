@@ -1,6 +1,6 @@
 <?php
 $filepath = realpath(dirname(__FILE__));
-include_once($filepath . '/../lib/database.php');
+include_once($filepath . '/../util/connectDB.php');
 include_once($filepath . '/../lib/session.php');
 ?>
 
@@ -10,13 +10,9 @@ include_once($filepath . '/../lib/session.php');
  */
 class product
 {
-    private $db;
-    public function __construct()
-    {
-        $this->db = new Database();
-    }
 
-    public function insert($data)
+
+    public static function insert($data)
     {
         $name = $data['name'];
         $originalPrice = $data['originalPrice'];
@@ -36,7 +32,10 @@ class product
 
         move_uploaded_file($file_temp, $uploaded_image);
         $query = "INSERT INTO products VALUES (NULL,'$name','$originalPrice','$promotionPrice','$unique_image'," . Session::get('userId') . ",'" . date('Y/m/d') . "','$cateId','$qty','$des',1,0) ";
-        $result = $this->db->insert($query);
+        $conn = connectDB();
+
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         if ($result) {
             $alert = "<span class='success'>Sản phẩm đã được thêm thành công</span>";
             return $alert;
@@ -46,7 +45,7 @@ class product
         }
     }
 
-    public function getAllAdmin($page = 1, $total = 8)
+    public static function getAllAdmin($page = 1, $total = 8)
     {
         if ($page <= 0) {
             $page = 1;
@@ -57,25 +56,31 @@ class product
 			 FROM products INNER JOIN categories ON products.cateId = categories.id INNER JOIN users ON products.createdBy = users.id
 			 order by products.id desc 
              limit $tmp,$total";
-        $result = $this->db->select($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         return $result;
     }
 
-    public function getAll()
+    public static function getAll()
     {
         $query =
             "SELECT products.*, categories.name as cateName
 			 FROM products INNER JOIN categories ON products.cateId = categories.id INNER JOIN users ON products.createdBy = users.id
 			 WHERE products.status = 1
              order by products.id desc ";
-        $result = $this->db->select($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         return $result;
     }
 
-    public function getCountPaging($row = 8)
+    public static function getCountPaging($row = 8)
     {
         $query = "SELECT COUNT(*) FROM products";
-        $mysqli_result = $this->db->select($query);
+        $conn = connectDB();
+        $mysqli_result = mysqli_query($conn, $query);
+        $conn->close();
         if ($mysqli_result) {
             $totalrow = intval((mysqli_fetch_all($mysqli_result, MYSQLI_ASSOC)[0])['COUNT(*)']);
             $result = ceil($totalrow / $row);
@@ -84,10 +89,12 @@ class product
         return false;
     }
 
-    public function getCountPagingClient($cateId, $row = 8)
+    public static function getCountPagingClient($cateId, $row = 8)
     {
         $query = "SELECT COUNT(*) FROM products WHERE cateId = $cateId";
-        $mysqli_result = $this->db->select($query);
+        $conn = connectDB();
+        $mysqli_result = mysqli_query($conn, $query);
+        $conn->close();
         if ($mysqli_result) {
             $totalrow = intval((mysqli_fetch_all($mysqli_result, MYSQLI_ASSOC)[0])['COUNT(*)']);
             $result = ceil($totalrow / $row);
@@ -96,7 +103,7 @@ class product
         return false;
     }
 
-    public function getFeaturedProducts()
+    public static function getFeaturedProducts()
     {
         $query =
             "SELECT *
@@ -104,11 +111,13 @@ class product
 			 WHERE products.status = 1
              order by products.soldCount DESC
              LIMIT 8";
-        $result = $this->db->select($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         return $result;
     }
 
-    public function getProductsByCateId($page = 1, $cateId, $total = 8)
+    public static function getProductsByCateId($page = 1, $cateId, $total = 8)
     {
         if ($page <= 0) {
             $page = 1;
@@ -119,7 +128,9 @@ class product
 			 FROM products
 			 WHERE status = 1 AND cateId = $cateId
              LIMIT $tmp,$total";
-        $mysqli_result = $this->db->select($query);
+        $conn = connectDB();
+        $mysqli_result = mysqli_query($conn, $query);
+        $conn->close();
         if ($mysqli_result) {
             $result = mysqli_fetch_all($mysqli_result, MYSQLI_ASSOC);
             return $result;
@@ -127,7 +138,7 @@ class product
         return false;
     }
 
-    public function update($data, $files)
+    public static function update($data, $files)
     {
         $name = $data['name'];
         $originalPrice = $data['originalPrice'];
@@ -166,7 +177,9 @@ class product
 					qty = '$qty'
 					 WHERE id = " . $data['id'] . " ";
         }
-        $result = $this->db->update($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         if ($result) {
             $alert = "<span class='success'>Cập nhật sản phẩm thành công</span>";
             return $alert;
@@ -176,28 +189,34 @@ class product
         }
     }
 
-    public function getProductbyIdAdmin($id)
+    public static function getProductbyIdAdmin($id)
     {
         $query = "SELECT * FROM products where id = '$id'";
-        $result = $this->db->select($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         return $result;
     }
 
-    public function getProductbyId($id)
+    public static function getProductbyId($id)
     {
         $query = "SELECT * FROM products where id = '$id' AND status = 1";
-        $mysqli_result = $this->db->select($query);
+        $conn = connectDB();
+        $mysqli_result = mysqli_query($conn, $query);
+        $conn->close();
         if ($mysqli_result) {
-            $result = mysqli_fetch_all($this->db->select($query), MYSQLI_ASSOC)[0];
+            $result = mysqli_fetch_all($mysqli_result, MYSQLI_ASSOC)[0];
             return $result;
         }
         return false;
     }
 
-    public function block($id)
+    public static function block($id)
     {
         $query = "UPDATE products SET status = 0 where id = '$id' ";
-        $result = $this->db->delete($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         if ($result) {
             return true;
         } else {
@@ -205,10 +224,12 @@ class product
         }
     }
 
-    public function active($id)
+    public static function active($id)
     {
         $query = "UPDATE products SET status = 1 where id = '$id' ";
-        $result = $this->db->delete($query);
+        $conn = connectDB();
+        $result = mysqli_query($conn, $query);
+        $conn->close();
         if ($result) {
             return true;
         } else {
@@ -216,10 +237,12 @@ class product
         }
     }
 
-    public function updateQty($id, $qty)
+    public static function updateQty($id, $qty)
     {
         $query = "UPDATE products SET qty = qty - $qty, soldCount = soldCount + $qty WHERE id = $id";
-        $mysqli_result = $this->db->update($query);
+        $conn = connectDB();
+        $mysqli_result = mysqli_query($conn, $query);
+        $conn->close();
         if ($mysqli_result) {
             return true;
         }

@@ -2,17 +2,13 @@
 include_once 'lib/session.php';
 include_once 'classes/product.php';
 include_once 'classes/categories.php';
-include_once 'classes/cart.php';
 
-$cart = new cart();
-$totalQty = $cart->getTotalQtyByUserId();
+$list = product::getProductsByCateId((isset($_GET['page']) ? $_GET['page'] : 1), (isset($_GET['cateId']) ? $_GET['cateId'] : 2));
+$pageCount = product::getCountPagingClient((isset($_GET['cateId']) ? $_GET['cateId'] : 2));
 
-$product = new product();
-$list = $product->getProductsByCateId((isset($_GET['page']) ? $_GET['page'] : 1), (isset($_GET['cateId']) ? $_GET['cateId'] : 2));
-$pageCount = $product->getCountPagingClient((isset($_GET['cateId']) ? $_GET['cateId'] : 2));
 
-$categories = new categories();
-$categoriesList = $categories->getAll();
+$categoriesList = categories::getAll();
+
 ?>
 
 <!DOCTYPE html>

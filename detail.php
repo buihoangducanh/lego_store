@@ -1,16 +1,8 @@
 <?php
 include 'classes/product.php';
-include_once 'classes/cart.php';
 
-$cart = new cart();
-$totalQty = $cart->getTotalQtyByUserId();
+$result = product::getProductbyId($_GET['id']);
 
-$product = new product();
-$result = $product->getProductbyId($_GET['id']);
-if (!$result) {
-    echo 'Không tìm thấy sản phẩm!';
-    die();
-}
 ?>
 
 <!DOCTYPE html>

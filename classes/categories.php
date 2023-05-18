@@ -1,7 +1,7 @@
 <?php
 $filepath = realpath(dirname(__FILE__));
-include_once($filepath . '/../lib/database.php');
 include_once($filepath . '/../lib/session.php');
+require_once('util/connectDB.php');
 ?>
 
 <?php
@@ -40,10 +40,11 @@ class categories
         return $result;
     }
 
-    public function getAll()
+    public static function getAll()
     {
         $query = "SELECT * FROM categories WHERE status = 1";
-        $result_mysqli = $this->db->select($query);
+        $conn = connectDB();
+        $result_mysqli = mysqli_query($conn, $query);
         if ($result_mysqli) {
             $result = mysqli_fetch_all($result_mysqli, MYSQLI_ASSOC);
             return $result;
@@ -65,7 +66,7 @@ class categories
 
     public function update($data)
     {
-        $query = "UPDATE categories SET name = '".$data['name']."' WHERE id = '".$data['id']."'";
+        $query = "UPDATE categories SET name = '" . $data['name'] . "' WHERE id = '" . $data['id'] . "'";
         $result = $this->db->update($query);
         if ($result) {
             $alert = "<span class='success'>Cập nhật danh mục thành công</span>";

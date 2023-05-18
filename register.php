@@ -2,7 +2,6 @@
 include 'classes/user.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sử dụng Prepared Statements để tránh tấn công SQL Injection
 
     $result = user::insert($_POST);
     if ($result === true) {

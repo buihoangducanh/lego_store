@@ -1,13 +1,8 @@
 <?php
 include_once 'lib/session.php';
 include_once 'classes/product.php';
-include_once 'classes/cart.php';
 
-$cart = new cart();
-$totalQty = $cart->getTotalQtyByUserId();
-
-$product = new product();
-$list = mysqli_fetch_all($product->getFeaturedProducts(), MYSQLI_ASSOC);
+$list = mysqli_fetch_all(product::getFeaturedProducts(), MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>

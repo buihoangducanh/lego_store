@@ -1,6 +1,5 @@
 <?php
 $filepath = realpath(dirname(__FILE__));
-include_once($filepath . '/../lib/database.php');
 include_once($filepath . '/../lib/session.php');
 include_once($filepath . '/../classes/cart.php');
 include_once($filepath . '/../classes/product.php');
@@ -14,17 +13,18 @@ include_once($filepath . '/../classes/product.php');
  */
 class order
 {
-    private $db;
-    public function __construct()
-    {
-        $this->db = new Database();
-    }
-    public function add()
+
+    public static function add()
     {
         $userId = Session::get('userId');
         //Add new order
         $sql_insert_cart = "INSERT INTO orders VALUES(NULL,'$userId','" . date('y/m/d') . "',NULL,'Processing' )";
-        $insert_cart = $this->db->insert($sql_insert_cart);
+
+        $conn = connectDB();
+        $insert_cart = mysqli_query($conn,  $sql_insert_cart);
+        $conn->close();
+
+
         if (!$insert_cart) {
             return false;
         }
@@ -35,30 +35,34 @@ class order
 
         //Get last orderid
         $sql_get_cart_last_id = "SELECT id FROM orders ORDER BY id DESC LIMIT 1";
-        $get_cart_last_id = $this->db->select($sql_get_cart_last_id);
+        $get_cart_last_id = mysqli_query($conn, $sql_get_cart_last_id);
         if ($get_cart_last_id) {
             $orderId = mysqli_fetch_row($get_cart_last_id)[0];
         }
 
+
         //Update product qty
-        $product = new product();
         foreach ($cart_user as $key => $value) {
             //Add item cart to order detail
             $sql_insert_order_details = "INSERT INTO order_details VALUES(NULL,'$orderId'," . $value['productId'] . "," . $value['qty'] . "," . $value['productPrice'] . ",'" . $value['productName'] . "','" . $value['productImage'] . "')";
-            $insert_order_details = $this->db->insert($sql_insert_order_details);
+            $insert_order_details = mysqli_query($conn, $sql_insert_order_details);
             if (!$insert_order_details) {
                 return false;
             }
 
-            $product->updateQty($value['productId'], $value['qty']);
+            product::updateQty($value['productId'], $value['qty']);
             if (!$product) {
                 return false;
             }
         }
 
+
         //Delete cart
         $sql_delete_cart = "DELETE FROM cart WHERE userId = $userId";
         $delete_cart = $this->db->delete($sql_delete_cart);
+
+
+        $conn->close();
         if ($delete_cart) {
             return true;
         }
@@ -76,7 +80,7 @@ class order
         return false;
     }
 
-    public function getOrderByUser()
+    public static function getOrderByUser()
     {
         $userId = Session::get('userId');
         $query = "SELECT * FROM orders WHERE userId = '$userId' ";
@@ -88,7 +92,7 @@ class order
         return false;
     }
 
-    public function getById($id)
+    public static function getById($id)
     {
         $query = "SELECT * FROM orders WHERE id = '$id' ";
         $mysqli_result = $this->db->select($query);
@@ -99,7 +103,7 @@ class order
         return false;
     }
 
-    public function getProcessingOrder()
+    public static function getProcessingOrder()
     {
         $query = "SELECT * FROM orders WHERE status = 'Processing'";
         $mysqli_result = $this->db->select($query);
@@ -110,7 +114,7 @@ class order
         return false;
     }
 
-    public function getProcessedOrder()
+    public static function getProcessedOrder()
     {
         $query = "SELECT * FROM orders WHERE status = 'Processed'";
         $mysqli_result = $this->db->select($query);
@@ -121,7 +125,7 @@ class order
         return false;
     }
 
-    public function getDeliveringOrder()
+    public static function getDeliveringOrder()
     {
         $query = "SELECT * FROM orders WHERE status = 'Delivering'";
         $mysqli_result = $this->db->select($query);
@@ -132,7 +136,7 @@ class order
         return false;
     }
 
-    public function getCompleteOrder()
+    public static function getCompleteOrder()
     {
         $query = "SELECT * FROM orders WHERE status = 'Complete'";
         $mysqli_result = $this->db->select($query);
@@ -143,7 +147,7 @@ class order
         return false;
     }
 
-    public function processedOrder($id)
+    public static function processedOrder($id)
     {
         $query = "UPDATE orders SET status = 'Processed' WHERE id = $id";
         $mysqli_result = $this->db->update($query);
@@ -155,7 +159,7 @@ class order
         return false;
     }
 
-    public function deliveringOrder($id)
+    public static function deliveringOrder($id)
     {
         $query = "UPDATE orders SET status = 'Delivering' WHERE id = $id";
         $mysqli_result = $this->db->update($query);
@@ -165,7 +169,7 @@ class order
         return false;
     }
 
-    public function completeOrder($id)
+    public static function completeOrder($id)
     {
         $query = "UPDATE orders SET status = 'Complete', receivedDate = '" . date('y/m/d') . "' WHERE id = $id";
         $mysqli_result = $this->db->update($query);

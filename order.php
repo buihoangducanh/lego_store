@@ -2,10 +2,6 @@
 include_once 'lib/session.php';
 Session::checkSession('client');
 include 'classes/order.php';
-include_once 'classes/cart.php';
-
-$cart = new cart();
-$totalQty = $cart->getTotalQtyByUserId();
 
 $order = new order();
 $result = $order->getOrderByUser();
@@ -23,29 +19,7 @@ $result = $order->getOrderByUser();
 </head>
 
 <body>
-    <!-- <nav>
-        <label class="logo">LEGO</label>
-        <ul>
-            <li><a href="index.php">Trang chủ</a></li>
-            <li><a href="productList.php">Sản phẩm</a></li>
-            <?php
-            if (isset($_SESSION['user']) && $_SESSION['user']) { ?>
-                <li><a href="logout.php" id="signin">Đăng xuất</a></li>
-            <?php } else { ?>
-                <li><a href="register.php" id="signup">Đăng ký</a></li>
-                <li><a href="login.php" id="signin">Đăng nhập</a></li>
-            <?php } ?>
-            <li><a href="order.php" id="order" class="active">Đơn hàng</a></li>
-            <li>
-                <a href="checkout.php">
-                    <i class="fa fa-shopping-bag"></i>
-                    <span class="sumItem">
-                        <?= $totalQty['total'] ?>
-                    </span>
-                </a>
-            </li>
-        </ul>
-    </nav> -->
+
     <?php
     include 'inc/header.php'
     ?>

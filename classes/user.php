@@ -1,7 +1,7 @@
 <?php
 $filepath = realpath(dirname(__FILE__));
 include_once($filepath . '/../lib/session.php');
-include_once($filepath . '/../util/connectDB.php');
+require_once('util/connectDB.php');
 ?>
 
 <?php
@@ -71,18 +71,22 @@ class user
 		}
 	}
 
-	public static function get()
+	function get_user_data()
 	{
 		$userId = Session::get('userId');
 		$conn = connectDB();
-		$stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
-		$stmt->bind_param("i", $userId);
-		$stmt->execute();
-		$result = $stmt->get_result()->fetch_assoc();
-		$stmt->close();
-		$conn->close();
 
-		return $result ? $result : false;
+		$stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE id = ?");
+		mysqli_stmt_bind_param($stmt, "i", $userId);
+		mysqli_stmt_execute($stmt);
+
+		$result = mysqli_stmt_get_result($stmt);
+		$user_data = mysqli_fetch_assoc($result);
+
+		mysqli_stmt_close($stmt);
+		mysqli_close($conn);
+
+		return $user_data ? $user_data : false;
 	}
 
 	public static function getLastUserId()

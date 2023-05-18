@@ -13,6 +13,5 @@ function connectDB()
     if (!$conn) {
         die("Kết nối thất bại: " . mysqli_connect_error());
     }
-
     return $conn;
 }
