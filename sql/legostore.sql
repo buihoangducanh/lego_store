@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3307
--- Thời gian đã tạo: Th6 11, 2023 lúc 10:15 AM
+-- Thời gian đã tạo: Th6 11, 2023 lúc 06:04 PM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.2.4
 
@@ -38,12 +38,13 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `status`) VALUES
-(2, 'Phương tiện', 1),
+(2, 'Phương Tiện', 1),
 (3, 'Nhà', 1),
 (4, 'Tự do', 1),
 (5, 'Đế lắp', 1),
 (6, 'Khác', 1),
-(7, 'Siêu anh hùng', 1);
+(7, 'Siêu anh hùng', 1),
+(8, 'Súng Đạn', 0);
 
 -- --------------------------------------------------------
 
@@ -65,9 +66,9 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `userId`, `total`, `createdDate`, `receivedDate`, `status`) VALUES
-(39, 31, 0.00, '2021-12-07 00:00:00', '2021-12-07 00:00:00', 'Complete'),
-(40, 32, 0.00, '2023-05-15 00:00:00', '2023-05-16 00:00:00', 'Complete'),
-(41, 32, 0.00, '2023-05-16 00:00:00', '2023-05-16 00:00:00', 'Complete');
+(45, 39, 4598000.00, '2023-06-11 17:43:29', '2023-06-11 13:38:34', 'Complete'),
+(46, 39, 3827000.00, '2023-06-11 18:42:17', '2023-06-11 18:43:12', 'Complete'),
+(47, 39, 5949000.00, '2023-06-11 18:45:30', '2023-06-14 00:00:00', 'Delivering');
 
 -- --------------------------------------------------------
 
@@ -90,15 +91,11 @@ CREATE TABLE `order_details` (
 --
 
 INSERT INTO `order_details` (`id`, `orderId`, `productId`, `qty`, `productPrice`, `productName`, `productImage`) VALUES
-(36, 39, 2, 1, 1599000, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 'GT_Heritage_Edition_Bronco_R.jpg'),
-(37, 39, 3, 1, 629000, 'Chiến Xe Monster Jam Grave Digger', 'Monster_Jam_Grave_Digger.jpg'),
-(38, 39, 4, 1, 949000, 'Ca nô Đệm Khí Cứu Hộ', 'LEGO_TECHNIC_42120.jpg'),
-(39, 39, 5, 1, 5000000, 'Xe Vận Tải Hạng Nặng', 'Xe_Van_Tai_Hang_Nang.jpg'),
-(40, 40, 4, 5, 949000, 'Ca nô Đệm Khí Cứu Hộ', 'LEGO_TECHNIC_42120.jpg'),
-(41, 41, 7, 1, 3999000, 'Lâu Đài Taj Mahal', 'Lau_Dai_Taj_Mahal.jpg'),
-(42, 41, 2, 3, 1599000, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 'GT_Heritage_Edition_Bronco_R.jpg'),
-(43, 41, 5, 1, 5000000, 'Xe Vận Tải Hạng Nặng', 'Xe_Van_Tai_Hang_Nang.jpg'),
-(44, 41, 9, 1, 2299000, 'Trung Tâm Mua Sắm Heartlake', 'trung_tam_mua_sam_heartlake.jpg');
+(45, 45, 9, 2, 2299000, 'Trung Tâm Mua Sắm Heartlake', 'trung_tam_mua_sam_heartlake.jpg'),
+(46, 46, 2, 2, 1599000, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 'GT_Heritage_Edition_Bronco_R.jpg'),
+(47, 46, 3, 1, 629000, 'Chiến Xe Monster Jam Grave Digger', 'Monster_Jam_Grave_Digger.jpg'),
+(48, 47, 4, 1, 949000, 'Ca nô Đệm Khí Cứu Hộ', 'LEGO_TECHNIC_42120.jpg'),
+(49, 47, 5, 1, 5000000, 'Xe Vận Tải Hạng Nặng', 'Xe_Van_Tai_Hang_Nang.jpg');
 
 -- --------------------------------------------------------
 
@@ -117,7 +114,7 @@ CREATE TABLE `products` (
   `cateId` int(11) NOT NULL,
   `qty` int(11) NOT NULL,
   `des` varchar(1000) NOT NULL,
-  `status` tinyint(1) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
   `soldCount` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -126,7 +123,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `originalPrice`, `promotionPrice`, `image`, `createdBy`, `createdDate`, `cateId`, `qty`, `des`, `status`, `soldCount`) VALUES
-(2, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 2000000, 1599000, 'GT_Heritage_Edition_Bronco_R.jpg', 1, '0000-00-00', 2, 93, 'Trẻ em và những người đam mê ô tô sẽ thích bộ đồ chơi xây dựng LEGO Speed Champions 76905 Siêu Xe Đua Ford GT Heritage Edition & Bronco R (660 chi tiết) này. Được đóng gói với các chi tiết thực tế, những mô hình sao chép tuyệt vời này mang lại trải nghiệm xây dựng bổ ích, trông tuyệt vời khi trưng bày và tuyệt vời cho sử thi hành động đua off-road và trên đường đua! Chi tiết đầy cảm hứng! Những chiếc xe trong vở kịch này có khung gầm rộng, cho phép đủ chỗ cho khoang lái 2 chỗ ngồi và thậm chí còn có nhiều chi tiết chân thực hơn.', 1, 7),
+(2, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 1999999, 1199000, 'GT_Heritage_Edition_Bronco_R.jpg', 1, '0000-00-00', 2, 54, 'Trẻ em và những người đam mê ô tô sẽ thích bộ đồ chơi xây dựng LEGO Speed Champions 76905 Siêu Xe Đua Ford GT Heritage Edition & Bronco R (660 chi tiết) này. Được đóng gói với các chi tiết thực tế, những mô hình sao chép tuyệt vời này mang lại trải nghiệm xây dựng bổ ích, trông tuyệt vời khi trưng bày và tuyệt vời cho sử thi hành động đua off-road và trên đường đua! Chi tiết đầy cảm hứng! Những chiếc xe trong vở kịch này có khung gầm rộng, cho phép đủ chỗ cho khoang lái 2 chỗ ngồi và thậm chí còn có nhiều chi tiết chân thực hơn.', 1, 7),
 (3, 'Chiến Xe Monster Jam Grave Digger', 900000, 629000, 'Monster_Jam_Grave_Digger.jpg', 1, '0000-00-00', 2, 19, 'Bạn đang tìm một món đồ chơi hoặc món quà thú vị cho những bé trai và bé gái yêu thích xe tải Monster Jam®? Xe tải kéo LEGO TECHNIC 42118 Chiến Xe Monster Jam Grave Digger ( 212 Chi tiết) được tích hợp các tính năng mà trẻ em sẽ thích. Những nét chấm phá chân thực bao gồm đồ họa Grave Digger với các chi tiết huyền bí, cùng với lốp xe khổng lồ, lá cờ có thể di chuyển và đèn pha màu đỏ.', 1, 1),
 (4, 'Ca nô Đệm Khí Cứu Hộ', 1000000, 949000, 'LEGO_TECHNIC_42120.jpg', 1, '0000-00-00', 2, 14, 'Bạn đang tìm kiếm món quà hoàn hảo cho những trẻ thích những chiếc xe thú vị? Chắc chắn các bé sẽ thích món đồ chơi LEGO® Technic ™ Ca nô Đệm Khí Cứu Hộ (42120) này. Được trang bị đầy đủ các tính năng đích thực, Ca nô Đệm Khí Cứu Hộ hoàn hảo để tái tạo các nhiệm vụ cứu hộ gay cấn. Các bé trai và bé gái từ 8 tuổi trở lên sẽ thích nhìn chiếc xe đồ chơi bay lơ lửng khi nó lăn trên các bánh xe được giấu kín.', 1, 6),
 (5, 'Xe Vận Tải Hạng Nặng', 5500000, 5000000, 'Xe_Van_Tai_Hang_Nang.jpg', 1, '0000-00-00', 2, 7, 'Đồ Chơi LEGO Xe Vận Tải Hạng Nặng 42128', 1, 3),
@@ -142,7 +139,8 @@ INSERT INTO `products` (`id`, `name`, `originalPrice`, `promotionPrice`, `image`
 (15, 'Đế Lắp Ráp Màu Trắng', 300000, 250000, '08_110.jpg', 1, '2021-12-07', 5, 10, 'Chưa bao giờ có một tấm nền LEGO màu trắng lớn như bộ đồ chơi lắp ráp này! Với diện tích hơn 10 \' (25cm), đồ chơi LEGO CLASSIC Đế Lắp Ráp Màu Trắng - 11010 mang đến cho trẻ em một khung cảnh LEGO rộng 32x32- stud để xây dựng, chơi và hiển thị. Lớn hơn, tốt hơn, sáng hơn, trắng hơn!', 1, 0),
 (16, 'Khu Rừng Rậm Ma Quái', 2300000, 1699000, 'horror_jungle.jpg', 1, '2021-12-07', 6, 10, 'Không ai được an toàn trong rừng với LEGO Minecraft 21176 Khu Rừng Rậm Ma Quái (489 chi tiết). Bộ xây dựng và chơi sáng tạo này có con quái vật cùng với một loạt các nhân vật và tính năng Minecraft thú vị. Người chơi Minecraft sẽ thích chạm tay vào con quái vật to lớn, và bắt đầu chiến đấu. Với cái đầu khổng lồ, có thể di chuyển, miệng mở và cánh tay được tạo ra để nghiền nát, Jungle Abomination là siêu mô hình rừng Minecraft. ', 1, 0),
 (17, 'LEGO HARRY POTTER 76382 Lớp Học Môn Biến Hình ', 1000000, 899000, '09_71.jpg', 1, '2021-12-07', 6, 20, 'Lớp Học Môn Biến Hình (76382) là một bộ độ chơi chứa bên trong một quyển sách lắp ráp bằng gạch. Trẻ em mở nó ra và ngay lập tức tham gia g lớp học biến hình của Giáo sư McGonagall. Phép thuật của Hogwarts khiến cho trẻ em thích thú dù ở bất cứ nơi đâu. ', 1, 0),
-(18, 'LEGO HARRY POTTER 76383 Lớp Học Môn Độc Dược', 1000000, 899000, '09_87.jpg', 1, '2021-12-07', 6, 5, 'Mở bộ độ chơi quyển sách kỳ diệu được lắp ráp bằng gạch và bước vào căn phòng Hogwarts ™! Lớp học môn độc dược của Giáo sư Snape sắp bắt đầu. Nhanh chóng! Lấy thiết bị của bạn từ kệ và tham gia cùng Draco Malfoy ™ và Seamus Finnigan với tư cách là người đứng đầu Nhà Slytherin ™ dạy phép thuật chế tạo độc dược.', 1, 0);
+(18, 'LEGO HARRY POTTER 76383 Lớp Học Môn Độc Dược', 1000000, 899000, '09_87.jpg', 1, '2021-12-07', 6, 5, 'Mở bộ độ chơi quyển sách kỳ diệu được lắp ráp bằng gạch và bước vào căn phòng Hogwarts ™! Lớp học môn độc dược của Giáo sư Snape sắp bắt đầu. Nhanh chóng! Lấy thiết bị của bạn từ kệ và tham gia cùng Draco Malfoy ™ và Seamus Finnigan với tư cách là người đứng đầu Nhà Slytherin ™ dạy phép thuật chế tạo độc dược.', 1, 0),
+(21, 'Siêu Xe Porsche 911', 6000000, 5500000, '10295-tiki-th_1.jpg', 40, '2023-06-11', 2, 43, 'Hãy tôn vinh phong cách không thể nhầm lẫn của Porsche với thử thách xây dựng tuyệt vời này khi bạn tạo ra chiếc xe cổ điển, sưu tầm của riêng mình với bộ mô hình LEGO Icons 10295 Siêu Xe Porsche 911 (1458 chi tiết). Chọn chế tạo mô hình Turbo với động cơ tăng áp hoặc Targa với quán bar Targa mang tính biểu tượng của nó và một mái che có thể tháo rời để lưu trữ bên dưới mui xe. Chế tạo chiếc Porsche 911 yêu thích của bạn Cả hai mẫu xe mô hình Turbo và Targa đều có các chi tiết đặc trưng của Porsche 911 như cản trước và cản sau mang tính biểu tượng, đèn pha góc cạnh, logo in và biển số. ', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -186,11 +184,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `fullname`, `dob`, `password`, `role_id`, `status`, `address`, `phone_number`) VALUES
-(1, 'admin@gmail.com', 'Bùi Hoàng Đức Anh', '2021-11-01', 'e10adc3949ba59abbe56e057f20f883e', 1, 1, '', NULL),
-(31, 'lapankhuongnguyen@gmail.com', 'khuong nguyen', '2021-12-06', 'c4ca4238a0b923820dcc509a6f75849b', 2, 1, 'CanTho', NULL),
-(32, 'buihoangducanh0987@gmail.com', 'anh bùi', '2023-05-23', 'f747692df880189915203f0f9c553870', 1, 1, 'Cầu giấy', '0348641180'),
-(36, 'hoangnam@gmail.com', 'hoàng nam', '1999-05-17', 'f747692df880189915203f0f9c553870', 2, 1, 'cầu giấy', '0987222777'),
-(39, 'bac@gmail.com', 'Tên sửa lần 3', '2015-02-12', '$2y$10$CCwUQbfnmEuRVHNAnbbAaO0JvTUHeFLWhMSpWAJkHMUCSUS5JYMAq', 2, 1, 'hà nội', '0987222888');
+(1, 'anhbui26@gmail.com', 'Bùi Hoàng Đức Anh', '2008-06-04', '$2a$12$fB68vD2t/Ouo1xFbOnM9Lu6m76LBz7.xpCJxE8lSnICCfOlqm5dnS', 1, 1, 'Cầu giấy, Hà nội', '0999222222'),
+(39, 'anhbui@gmail.com', 'Bùi Hoàng Đức Anh', '2015-02-12', '$2y$10$CCwUQbfnmEuRVHNAnbbAaO0JvTUHeFLWhMSpWAJkHMUCSUS5JYMAq', 2, 1, 'Hà đông', '0987222888'),
+(40, 'admin@gmail.com', 'Bùi Hoàng Đức Anh', '2002-11-26', '$2y$10$2CcP9fdmMx686TpnyYgc2ed9qNlpYhF4wmByLaeSrH7gA/Akr9u5S', 1, 1, 'Cầu Giấy, Hà Nội', '0348641180'),
+(41, 'test@gmail.com', 'TEST USER', '2023-06-29', '$2y$10$4QhE7XcqwUfcttkFqkTU...rOrBU8dkh5LgdFRqkS3iBU5GwaEQUi', 2, 1, 'TEST', '0987222787');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -245,25 +242,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT cho bảng `role`
@@ -275,7 +272,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -285,14 +282,14 @@ ALTER TABLE `users`
 -- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `orders_users_fk` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `order_details`
 --
 ALTER TABLE `order_details`
-  ADD CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`productId`) REFERENCES `products` (`id`),
-  ADD CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`orderId`) REFERENCES `orders` (`id`);
+  ADD CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`orderId`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `products`
