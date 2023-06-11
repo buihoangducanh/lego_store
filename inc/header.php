@@ -30,7 +30,15 @@
                                         } ?>>
                     <i class="fa fa-shopping-bag"></i>
                     <span class="sumItem">
-                        <!-- <?php ($totalQty['total']) ? $totalQty['total'] : "0" ?> -->
+                        <?php
+                        $totalQty = 0;
+                        if (isset($_SESSION['cart'])) {
+                            foreach ($_SESSION['cart'] as $item) {
+                                $totalQty += $item['quantity'];
+                            }
+                        }
+                        echo $totalQty;
+                        ?>
                     </span>
                 </a>
             </li>
