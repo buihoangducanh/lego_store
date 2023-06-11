@@ -1,41 +1,52 @@
 <?php
-include '../lib/session.php';
-include '../classes/categories.php';
-Session::checkSession('admin');
-$role_id = Session::get('role_id');
-if ($role_id == 1) {
-    # code...
-} else {
+session_start();
+require '../util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
+$role_id = $_SESSION['user_role'];
+if ($role_id !== 1) {
     header("Location:../index.php");
+    exit();
 }
 
+// Xử lý khóa/mở danh mục
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $categories = new categories();
     if (isset($_POST['block'])) {
-        $result = $categories->block($_POST['id']);
+        $categoryId = $_POST['id'];
+        // Thực hiện khóa danh mục (cập nhật trạng thái)
+        $query = "UPDATE categories SET status = 0 WHERE id = '$categoryId'";
+        $result = mysqli_query($conn, $query);
         if ($result) {
-            echo '<script type="text/javascript">alert("Khóa danh mục thành công!");</script>';
-        } else {
-            echo '<script type="text/javascript">alert("Khóa danh mục thất bại!");</script>';
+            echo "<script>
+                    alert('Đã khoá danh mục với id $categoryId');
+                 </script>";
         }
-    } else if (isset($_POST['active'])) {
-        $result = $categories->active($_POST['id']);
+    } elseif (isset($_POST['active'])) {
+        $categoryId = $_POST['id'];
+        // Thực hiện mở danh mục (cập nhật trạng thái)
+        $query = "UPDATE categories SET status = 1 WHERE id = '$categoryId'";
+        $result = mysqli_query($conn, $query);
         if ($result) {
-            echo '<script type="text/javascript">alert("Kích hoạt danh mục thành công!");</script>';
-        } else {
-            echo '<script type="text/javascript">alert("Kích hoạt danh mục thất bại!");</script>';
+            echo "<script>
+                    alert('Mở khoá danh mục với id $categoryId');
+                 </script>";
         }
-    } else {
-        echo '<script type="text/javascript">alert("Có lỗi xảy ra!");</script>';
-        die();
     }
 }
+// Lấy danh sách danh mục từ cơ sở dữ liệu
+$perPage = 5; // Số danh mục hiển thị trên mỗi trang
+$page = isset($_GET['page']) ? $_GET['page'] : 1; // Trang hiện tại
 
-$categories = new categories();
-$list = $categories->getAllAdmin((isset($_GET['page']) ? $_GET['page'] : 1));
-$pageCount = $categories->getCountPaging();
+// Tính toán số lượng trang và vị trí bắt đầu
+$queryCount = "SELECT COUNT(*) AS total FROM categories";
+$resultCount = mysqli_query($conn, $queryCount);
+$rowCount = mysqli_fetch_assoc($resultCount);
+$totalCategories = $rowCount['total'];
+$pageCount = ceil($totalCategories / $perPage);
+$start = ($page - 1) * $perPage;
+
+$queryList = "SELECT * FROM categories ORDER BY id ASC LIMIT $start, $perPage";
+$resultList = mysqli_query($conn, $queryList);
+$list = mysqli_fetch_all($resultList, MYSQLI_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,9 +56,7 @@ $pageCount = $categories->getCountPaging();
 </head>
 
 <body>
-    <?php
-    include 'inc/admin_header.php'
-    ?>
+    <?php include 'inc/admin_header.php' ?>
     <div class="title">
         <h1>Danh sách danh mục</h1>
     </div>
@@ -74,12 +83,12 @@ $pageCount = $categories->getCountPaging();
                             <?php
                             if ($value['status']) { ?>
                                 <form action="categoriesList.php" method="post">
-                                    <input type="text" name="id" hidden value="<?= $value['id'] ?>" style="display: none;">
+                                    <input type="hidden" name="id" value="<?= $value['id'] ?>">
                                     <input type="submit" value="Khóa" name="block">
                                 </form>
                             <?php } else { ?>
                                 <form action="categoriesList.php" method="post">
-                                    <input type="text" name="id" hidden value="<?= $value['id'] ?>" style="display: none;">
+                                    <input type="hidden" name="id" value="<?= $value['id'] ?>">
                                     <input type="submit" value="Mở" name="active">
                                 </form>
                             <?php } ?>
@@ -91,28 +100,27 @@ $pageCount = $categories->getCountPaging();
             <h3>Chưa có danh mục nào...</h3>
         <?php } ?>
         <div class="pagination">
-            <a href="categoriesList.php?page=<?= (isset($_GET['page'])) ? (($_GET['page'] <= 1) ? 1 : $_GET['page'] - 1) : 1 ?>">&laquo;</a>
-            <?php
-            for ($i = 1; $i <= $pageCount; $i++) {
-                if (isset($_GET['page'])) {
-                    if ($i == $_GET['page']) { ?>
-                        <a class="active" href="categoriesList.php?page=<?= $i ?>"><?= $i ?></a>
-                    <?php } else { ?>
-                        <a href="categoriesList.php?page=<?= $i ?>"><?= $i ?></a>
-                    <?php  }
-                } else { ?>
+            <?php if ($page > 1) { ?>
+                <a href="categoriesList.php?page=<?= $page - 1 ?>">&laquo;</a>
+            <?php } else { ?>
+                <span class="disabled">&laquo;</span>
+            <?php } ?>
+            <?php for ($i = 1; $i <= $pageCount; $i++) { ?>
+                <?php if ($i == $page) { ?>
+                    <a class="active" href="categoriesList.php?page=<?= $i ?>"><?= $i ?></a>
+                <?php } else { ?>
                     <a href="categoriesList.php?page=<?= $i ?>"><?= $i ?></a>
-                <?php  } ?>
-            <?php }
-            ?>
-            <a href="categoriesList.php?page=<?= (isset($_GET['page'])) ? $_GET['page'] + 1 : 2 ?>">&raquo;</a>
+                <?php } ?>
+            <?php } ?>
+            <?php if ($page < $pageCount) { ?>
+                <a href="categoriesList.php?page=<?= $page + 1 ?>">&raquo;</a>
+            <?php } else { ?>
+                <span class="disabled">&raquo;</span>
+            <?php } ?>
         </div>
     </div>
-    </div>
 
-    <?php
-    include '../inc/footer.php'
-    ?>
+    <?php include '../inc/footer.php' ?>
 </body>
 
 </html>

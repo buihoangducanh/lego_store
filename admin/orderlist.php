@@ -1,35 +1,63 @@
 <?php
-include_once '../lib/session.php';
-Session::checkSession('admin');
-$role_id = Session::get('role_id');
-if ($role_id == 1) {
-    # code...
-} else {
+session_start();
+require '../util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
+$role_id = $_SESSION['user_role'];
+if ($role_id !== 1) {
     header("Location:../index.php");
+    exit();
 }
-include '../classes/order.php';
+// Lấy danh sách đơn hàng đang xử lý
+$processingOrderList = array();
+$sqlProcessing = "SELECT * FROM orders WHERE status = 'Processing'";
+$resultProcessing = mysqli_query($conn, $sqlProcessing);
+if (mysqli_num_rows($resultProcessing) > 0) {
+    while ($rowProcessing = mysqli_fetch_assoc($resultProcessing)) {
+        $processingOrderList[] = $rowProcessing;
+    }
+}
 
-$order = new order();
-$processingOrderList = $order->getProcessingOrder();
-$processedOrderList = $order->getProcessedOrder();
-$deliveringOrderList = $order->getDeliveringOrder();
-$completeOrderList = $order->getCompleteOrder();
+// Lấy danh sách đơn hàng đã xử lý
+$processedOrderList = array();
+$sqlProcessed = "SELECT * FROM orders WHERE status = 'Processed'";
+$resultProcessed = mysqli_query($conn, $sqlProcessed);
+if (mysqli_num_rows($resultProcessed) > 0) {
+    while ($rowProcessed = mysqli_fetch_assoc($resultProcessed)) {
+        $processedOrderList[] = $rowProcessed;
+    }
+}
+
+// Lấy danh sách đơn hàng đang giao
+$deliveringOrderList = array();
+$sqlDelivering = "SELECT * FROM orders WHERE status = 'Delivering'";
+$resultDelivering = mysqli_query($conn, $sqlDelivering);
+if (mysqli_num_rows($resultDelivering) > 0) {
+    while ($rowDelivering = mysqli_fetch_assoc($resultDelivering)) {
+        $deliveringOrderList[] = $rowDelivering;
+    }
+}
+
+// Lấy danh sách đơn hàng đã hoàn thành
+$completeOrderList = array();
+$sqlComplete = "SELECT * FROM orders WHERE status = 'Complete'";
+$resultComplete = mysqli_query($conn, $sqlComplete);
+if (mysqli_num_rows($resultComplete) > 0) {
+    while ($rowComplete = mysqli_fetch_assoc($resultComplete)) {
+        $completeOrderList[] = $rowComplete;
+    }
+}
+
+include 'inc/metadata_libs.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <?php
-    include 'inc/metadata_libs.php'
-    ?>
     <title>Quản lý đơn đặt hàng</title>
+    <?php include 'inc/metadata_libs.php'; ?>
 </head>
 
 <body>
-    <?php
-    include 'inc/admin_header.php'
-    ?>
+    <?php include 'inc/admin_header.php'; ?>
     <div class="title">
         <h1>Danh sách đơn đặt hàng</h1>
     </div>
@@ -44,107 +72,89 @@ $completeOrderList = $order->getCompleteOrder();
 
         <!-- Tab content -->
         <div id="Processing" class="tabcontent">
-            <?php
-            if ($processingOrderList) { ?>
+            <?php if (!empty($processingOrderList)) { ?>
                 <table class="list">
                     <tr>
-                        <th>STT</th>
-                        <th>Mã đơn hàng</th>
-                        <th>Ngày đặt</th>
-                        <th>Ngày giao</th>
-                        <th>Tình trạng</th>
-                        <th>Thao tác</th>
+                        <th class="text-center p-2">STT</th>
+                        <th class="text-center p-2">Mã đơn hàng</th>
+                        <th class="text-center p-2">Ngày đặt</th>
+                        <th class="text-center p-2">Ngày giao</th>
+                        <th class="text-center p-2">Tình trạng</th>
+                        <th class="text-center p-2">Thao tác</th>
                     </tr>
-                    <?php $count = 1;
-                    foreach ($processingOrderList as $key => $value) { ?>
+                    <?php
+                    $count = 1;
+                    foreach ($processingOrderList as $order) {
+                    ?>
                         <tr>
-                            <td><?= $count++ ?></td>
-                            <td><?= $value['id'] ?></td>
-                            <td><?= $value['createdDate'] ?></td>
-                            <td><?= ($value['status'] != "Processing") ? $value['receivedDate'] : "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý" ?> <?= ($value['status'] != "Complete" && $value['status'] != "Processing") ? "(Dự kiến)" : "" ?> </td>
-                            <td><?= $value['status'] ?></td>
+                            <td><?php echo $count++; ?></td>
+                            <td><?php echo $order['id']; ?></td>
+                            <td><?php echo $order['createdDate']; ?></td>
                             <td>
-                                <a href="orderlistdetail.php?orderId=<?= $value['id'] ?>">Chi tiết</a>
+                                <?php
+                                if ($order['status'] != "Processing") {
+                                    echo $order['receivedDate'];
+                                } else {
+                                    echo "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý";
+                                }
+                                echo ($order['status'] != "Complete" && $order['status'] != "Processing") ? "(Dự kiến)" : "";
+                                ?>
+                            </td>
+                            <td><?php echo $order['status']; ?></td>
+                            <td>
+                                <a href="orderlistdetail.php?orderId=<?php echo $order['id']; ?>">Chi tiết</a>
                             </td>
                         </tr>
-                    <?php }
-                    ?>
+                    <?php } ?>
                 </table>
             <?php } else { ?>
                 <h3>Chưa có đơn hàng nào đang xử lý</h3>
-            <?php }
-            ?>
+            <?php } ?>
         </div>
 
         <div id="Processed" class="tabcontent">
-            <?php
-            if ($processedOrderList) { ?>
+            <?php if (!empty($processedOrderList)) { ?>
                 <table class="list">
                     <tr>
-                        <th>STT</th>
-                        <th>Mã đơn hàng</th>
-                        <th>Ngày đặt</th>
-                        <th>Ngày giao</th>
-                        <th>Tình trạng</th>
-                        <th>Thao tác</th>
+                        <th class="text-center p-2">STT</th>
+                        <th class="text-center p-2">Mã đơn hàng</th>
+                        <th class="text-center p-2">Ngày đặt</th>
+                        <th class="text-center p-2">Ngày giao</th>
+                        <th class="text-center p-2">Tình trạng</th>
+                        <th class="text-center p-2">Thao tác</th>
                     </tr>
-                    <?php $count = 1;
-                    foreach ($processedOrderList as $key => $value) { ?>
+                    <?php
+                    $count = 1;
+                    foreach ($processedOrderList as $order) {
+                    ?>
                         <tr>
-                            <td><?= $count++ ?></td>
-                            <td><?= $value['id'] ?></td>
-                            <td><?= $value['createdDate'] ?></td>
-                            <td><?= ($value['status'] != "Processing") ? $value['receivedDate'] : "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý" ?> <?= ($value['status'] != "Complete" && $value['status'] != "Processing") ? "(Dự kiến)" : "" ?> </td>
-                            <td><?= $value['status'] ?></td>
+                            <td><?php echo $count++; ?></td>
+                            <td><?php echo $order['id']; ?></td>
+                            <td><?php echo $order['createdDate']; ?></td>
                             <td>
-                                <a href="delivering_order.php?orderId=<?= $value['id'] ?>">Giao hàng</a>
+                                <?php
+                                if ($order['status'] != "Processing") {
+                                    echo $order['receivedDate'];
+                                } else {
+                                    echo "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý";
+                                }
+                                echo ($order['status'] != "Complete" && $order['status'] != "Processing") ? "(Dự kiến)" : "";
+                                ?>
+                            </td>
+                            <td><?php echo $order['status']; ?></td>
+                            <td>
+                                <a href="delivering_order.php?orderId=<?php echo $order['id']; ?>">Giao hàng</a>
                             </td>
                         </tr>
-                    <?php }
-                    ?>
+                    <?php } ?>
                 </table>
             <?php } else { ?>
                 <h3>Chưa có đơn hàng nào đã xử lý</h3>
-            <?php }
-            ?>
+            <?php } ?>
         </div>
 
         <div id="Delivering" class="tabcontent">
-            <?php
-            if ($deliveringOrderList) { ?>
-                <table class="list">
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã đơn hàng</th>
-                        <th>Ngày đặt</th>
-                        <th>Ngày nhận</th>
-                        <th>Tình trạng</th>
-                        <th>Thao tác</th>
-                    </tr>
-                    <?php $count = 1;
-                    foreach ($deliveringOrderList as $key => $value) { ?>
-                        <tr>
-                            <td><?= $count++ ?></td>
-                            <td><?= $value['id'] ?></td>
-                            <td><?= $value['createdDate'] ?></td>
-                            <td><?= ($value['status'] != "Processing") ? $value['receivedDate'] : "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý" ?> <?= ($value['status'] != "Complete" && $value['status'] != "Processing") ? "(Dự kiến)" : "" ?> </td>
-                            <td><?= $value['status'] ?></td>
-                            <td>
-                                <a href="orderlistdetail.php?orderId=<?= $value['id'] ?>">Chi tiết</a>
-                            </td>
-                        </tr>
-                    <?php }
-                    ?>
-                </table>
-            <?php } else { ?>
-                <h3>Chưa có đơn hàng nào đang giao</h3>
-            <?php }
-            ?>
-        </div>
-
-        <div id="Complete" class="tabcontent">
-            <?php
-            if ($completeOrderList) { ?>
+            <?php if (!empty($deliveringOrderList)) { ?>
                 <table class="list">
                     <tr>
                         <th class="text-center p-2">STT</th>
@@ -154,36 +164,85 @@ $completeOrderList = $order->getCompleteOrder();
                         <th class="text-center p-2">Tình trạng</th>
                         <th class="text-center p-2">Thao tác</th>
                     </tr>
-                    <?php $count = 1;
-                    foreach ($completeOrderList as $key => $value) { ?>
+                    <?php
+                    $count = 1;
+                    foreach ($deliveringOrderList as $order) {
+                    ?>
                         <tr>
-                            <td><?= $count++ ?></td>
-                            <td><?= $value['id'] ?></td>
-                            <td><?= $value['createdDate'] ?></td>
-                            <td><?= ($value['status'] != "Processing") ? $value['receivedDate'] : "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý" ?> <?= ($value['status'] != "Complete" && $value['status'] != "Processing") ? "(Dự kiến)" : "" ?> </td>
-                            <td><?= $value['status'] ?></td>
+                            <td><?php echo $count++; ?></td>
+                            <td><?php echo $order['id']; ?></td>
+                            <td><?php echo $order['createdDate']; ?></td>
                             <td>
-                                <a href="orderlistdetail.php?orderId=<?= $value['id'] ?>">Chi tiết</a>
+                                <?php
+                                if ($order['status'] != "Processing") {
+                                    echo $order['receivedDate'];
+                                } else {
+                                    echo "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý";
+                                }
+                                echo ($order['status'] != "Complete" && $order['status'] != "Processing") ? "(Dự kiến)" : "";
+                                ?>
+                            </td>
+                            <td><?php echo $order['status']; ?></td>
+                            <td>
+                                <a href="orderlistdetail.php?orderId=<?php echo $order['id']; ?>">Chi tiết</a>
                             </td>
                         </tr>
-                    <?php }
+                    <?php } ?>
+                </table>
+            <?php } else { ?>
+                <h3>Chưa có đơn hàng nào đang giao</h3>
+            <?php } ?>
+        </div>
+
+        <div id="Complete" class="tabcontent">
+            <?php if (!empty($completeOrderList)) { ?>
+                <table class="list">
+                    <tr>
+                        <th class="text-center p-2">STT</th>
+                        <th class="text-center p-2">Mã đơn hàng</th>
+                        <th class="text-center p-2">Ngày đặt</th>
+                        <th class="text-center p-2">Ngày nhận</th>
+                        <th class="text-center p-2">Tình trạng</th>
+                        <th class="text-center p-2">Thao tác</th>
+                    </tr>
+                    <?php
+                    $count = 1;
+                    foreach ($completeOrderList as $order) {
                     ?>
+                        <tr>
+                            <td><?php echo $count++; ?></td>
+                            <td><?php echo $order['id']; ?></td>
+                            <td><?php echo $order['createdDate']; ?></td>
+                            <td>
+                                <?php
+                                if ($order['status'] != "Processing") {
+                                    echo $order['receivedDate'];
+                                } else {
+                                    echo "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý";
+                                }
+                                echo ($order['status'] != "Complete" && $order['status'] != "Processing") ? "(Dự kiến)" : "";
+                                ?>
+                            </td>
+                            <td><?php echo $order['status']; ?></td>
+                            <td>
+                                <a href="orderlistdetail.php?orderId=<?php echo $order['id']; ?>">Chi tiết</a>
+                            </td>
+                        </tr>
+                    <?php } ?>
                 </table>
             <?php } else { ?>
                 <h3>Chưa có đơn hàng nào đã hoàn thành</h3>
-            <?php }
-            ?>
+            <?php } ?>
         </div>
     </div>
     </div>
 
-    <?php
-    include '../inc/footer.php'
-    ?>
+    <?php include '../inc/footer.php' ?>
 </body>
+
 <script type="text/javascript">
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 1; i < tabcontent.length; i++) {
+    var tabcontent = document.getElementsByClassName("tabcontent");
+    for (var i = 1; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
 
@@ -195,7 +254,13 @@ $completeOrderList = $order->getCompleteOrder();
             tabcontent[i].style.display = "none";
         }
 
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
         document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
     }
 </script>
 

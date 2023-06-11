@@ -1,24 +1,62 @@
 <?php
-include '../lib/session.php';
-include '../classes/product.php';
-include '../classes/categories.php';
-Session::checkSession('admin');
-$role_id = Session::get('role_id');
-if ($role_id == 1) {
-    $product = new product();
-    $productUpdate = mysqli_fetch_assoc($product->getProductbyIdAdmin($_GET['id']));
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
-        $result = $product->update($_POST, $_FILES);
-        $productUpdate = mysqli_fetch_assoc($product->getProductbyIdAdmin($_GET['id']));
-    }
-} else {
+session_start();
+require '../util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
+$role_id = $_SESSION['user_role'];
+if ($role_id !== 1) {
     header("Location:../index.php");
+    exit();
 }
 
-$category = new categories();
-$categoriesList = $category->getAll();
-?>
+if (isset($_GET['id'])) {
+    $productId = $_GET['id'];
 
+    // Fetch product details from the database
+    $sql = "SELECT * FROM products WHERE id = '$productId'";
+    $result = mysqli_query($conn, $sql);
+    $productUpdate = mysqli_fetch_assoc($result);
+
+    // Fetch categories list
+    $categoriesList = array();
+    $sql = "SELECT * FROM categories";
+    $result = mysqli_query($conn, $sql);
+    while ($row = mysqli_fetch_assoc($result)) {
+        $categoriesList[] = $row;
+    }
+
+    if (isset($_POST['submit'])) {
+        $id = $_POST['id'];
+        $name = $_POST['name'];
+        $originalPrice = $_POST['originalPrice'];
+        $promotionPrice = $_POST['promotionPrice'];
+        $cateId = $_POST['cateId'];
+        $qty = $_POST['qty'];
+        $des = $_POST['des'];
+
+        // Check if a new image is uploaded
+        if (!empty($_FILES['image']['name'])) {
+            $image = $_FILES['image']['name'];
+            $target = "uploads/" . basename($image);
+
+            // Upload the new image
+            move_uploaded_file($_FILES['image']['tmp_name'], $target);
+        } else {
+            // If no new image is uploaded, retain the existing image
+            $image = $productUpdate['image'];
+        }
+
+        // Update the product in the database
+        $sql = "UPDATE products SET name='$name', originalPrice='$originalPrice', promotionPrice='$promotionPrice', image='$image', cateId='$cateId', qty='$qty', des='$des' WHERE id='$id'";
+        mysqli_query($conn, $sql);
+
+        if (mysqli_affected_rows($conn) > 0) {
+            echo "<script>alert('Sản phẩm đã được cập nhật thành công.'); window.location.href = 'productList.php';</script>";
+            exit();
+        } else {
+            echo "<script>alert('Có lỗi xảy ra. Vui lòng thử lại sau.'); history.back();</script>";
+        }
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,11 +74,6 @@ $categoriesList = $category->getAll();
         <h1>Chỉnh sửa sản phẩm</h1>
     </div>
     <div class="container">
-        <?php
-        if (isset($result)) {
-            echo $result;
-        }
-        ?>
         <div class="form-add" style="padding-top: 30px; padding-bottom: 30px;">
             <form action="edit_product.php?id=<?= $productUpdate['id'] ?>" method="post" enctype="multipart/form-data">
                 <input type="text" hidden name="id" style="display: none;" value="<?= $productUpdate['id'] ?>">

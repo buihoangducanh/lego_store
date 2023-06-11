@@ -36,7 +36,7 @@ if (isset($_POST['submit'])) {
 
             // Chuyển hướng đến trang tương ứng (ví dụ: trang chủ hoặc trang admin)
             if ($user['role_id'] == 1) {
-                echo '<script>window.location.href = "admin/indexadmin.php";</script>'; // Chuyển hướng đến trang admin
+                echo '<script>window.location.href = "admin/index.php";</script>'; // Chuyển hướng đến trang admin
             } else {
                 echo '<script>window.location.href = "index.php";</script>'; // Chuyển hướng đến trang chủ
             }

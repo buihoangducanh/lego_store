@@ -12,7 +12,7 @@ $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($page - 1) * $perPage;
 
 // Lấy danh mục từ cơ sở dữ liệu
-$query = "SELECT * FROM categories";
+$query = "SELECT * FROM categories where status = 1";
 $result = mysqli_query($conn, $query);
 $categoriesList = mysqli_fetch_all($result, MYSQLI_ASSOC);
 

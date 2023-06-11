@@ -19,7 +19,7 @@ $orderId = $_GET['orderId'];
 // Cập nhật trạng thái đơn hàng thành "Delivered" và ngày nhận hàng thành ngày hiện tại
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 $currentDate = date('Y-m-d H:i:s');
-$query = "UPDATE orders SET status = 'Delivered', receivedDate = '$currentDate' WHERE id = $orderId";
+$query = "UPDATE orders SET status = 'Complete', receivedDate = '$currentDate' WHERE id = $orderId";
 $result = mysqli_query($conn, $query);
 
 if ($result) {

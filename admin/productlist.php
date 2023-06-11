@@ -1,55 +1,69 @@
 <?php
-include '../lib/session.php';
-include '../classes/product.php';
-Session::checkSession('admin');
-$role_id = Session::get('role_id');
-if ($role_id == 1) {
-    # code...
-} else {
+session_start();
+$role_id = $_SESSION['user_role'];
+if ($role_id !== 1) {
     header("Location:../index.php");
+    exit();
 }
+require '../util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
 
+// Xử lý khóa/mở sản phẩm
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $product = new product();
     if (isset($_POST['block'])) {
-        $result = $product->block($_POST['id']);
+        $productId = $_POST['id'];
+        // Thực hiện khóa sản phẩm (cập nhật trạng thái)
+        $query = "UPDATE products SET status = 0 WHERE id = '$productId'";
+        $result = mysqli_query($conn, $query);
         if ($result) {
-            echo '<script type="text/javascript">alert("Khóa sản phẩm thành công!");</script>';
-        } else {
-            echo '<script type="text/javascript">alert("Khóa sản phẩm thất bại!");</script>';
+            echo "<script>
+                    alert('Đã khoá sản phẩm id $productId');
+                 </script>";
         }
-    } else if (isset($_POST['active'])) {
-        $result = $product->active($_POST['id']);
+    } elseif (isset($_POST['active'])) {
+        $productId = $_POST['id'];
+        // Thực hiện mở sản phẩm (cập nhật trạng thái)
+        $query = "UPDATE products SET status = 1 WHERE id = '$productId'";
+        $result = mysqli_query($conn, $query);
         if ($result) {
-            echo '<script type="text/javascript">alert("Kích hoạt sản phẩm thành công!");</script>';
-        } else {
-            echo '<script type="text/javascript">alert("Kích hoạt sản phẩm thất bại!");</script>';
+            echo "<script>
+                    alert('Mở khoá sản phẩm id $productId');
+                 </script>";
         }
-    } else {
-        echo '<script type="text/javascript">alert("Có lỗi xảy ra!");</script>';
-        die();
     }
 }
 
-$product = new product();
-$list = $product->getAllAdmin((isset($_GET['page']) ? $_GET['page'] : 1));
-$pageCount = $product->getCountPaging();
+
+// Phân trang
+$perPage = 8; // Số sản phẩm hiển thị trên mỗi trang
+$page = isset($_GET['page']) ? $_GET['page'] : 1; // Trang hiện tại
+$start = ($page - 1) * $perPage; // Vị trí bắt đầu lấy dữ liệu trong cơ sở dữ liệu
+
+// Truy vấn dữ liệu sản phẩm từ cơ sở dữ liệu, sử dụng LIMIT và OFFSET để phân trang
+$query = "SELECT * FROM products LIMIT $perPage OFFSET $start";
+$result = mysqli_query($conn, $query);
+$list = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Đếm tổng số sản phẩm
+$queryCount = "SELECT COUNT(*) AS total FROM products";
+$resultCount = mysqli_query($conn, $queryCount);
+$rowCount = mysqli_fetch_assoc($resultCount);
+$totalProducts = $rowCount['total'];
+
+// Tính tổng số trang
+$pageCount = ceil($totalProducts / $perPage);
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <?php
-    include 'inc/metadata_libs.php'
-    ?>
+    <?php include 'inc/metadata_libs.php'; ?>
     <title>Danh sách sản phẩm</title>
 </head>
 
 <body>
-    <?php
-    include 'inc/admin_header.php'
-    ?>
+    <?php include 'inc/admin_header.php'; ?>
 
     <div class="title">
         <h1>Danh sách sản phẩm</h1>
@@ -79,7 +93,19 @@ $pageCount = $product->getCountPaging();
                         <td><img class="image-cart" src="uploads/<?= $value['image'] ?>" alt=""></td>
                         <td><?= number_format($value['originalPrice'], 0, '', ',') ?> VND</td>
                         <td><?= number_format($value['promotionPrice'], 0, '', ',') ?> VND</td>
-                        <td><?= $value['fullName'] ?></td>
+                        <td>
+                            <?php
+                            $userId = $value['createdBy'];
+                            $query = "SELECT fullname FROM users WHERE id = '$userId'";
+                            $result = mysqli_query($conn, $query);
+                            if ($result && mysqli_num_rows($result) > 0) {
+                                $row = mysqli_fetch_assoc($result);
+                                echo $row['fullname'];
+                            } else {
+                                echo "Unknown";
+                            }
+                            ?>
+                        </td>
                         <td><?= $value['qty'] ?></td>
                         <td><?= ($value['status']) ? "Active" : "Block" ?></td>
                         <td class="p-2">
@@ -105,30 +131,18 @@ $pageCount = $product->getCountPaging();
         <?php } ?>
     </div>
     <div class="pagination">
-        <a href="productlist.php?page=<?= (isset($_GET['page'])) ? (($_GET['page'] <= 1) ? 1 : $_GET['page'] - 1) : 1 ?>">&laquo;</a>
-        <?php
-        for ($i = 1; $i <= $pageCount; $i++) {
-            if (isset($_GET['page'])) {
-                if ($i == $_GET['page']) { ?>
-                    <a class="active" href="productlist.php?page=<?= $i ?>"><?= $i ?></a>
-                <?php } else { ?>
-                    <a href="productlist.php?page=<?= $i ?>"><?= $i ?></a>
-                <?php  }
-            } else {
-                if ($i == 1) { ?>
-                    <a class="active" href="productlist.php?page=<?= $i ?>"><?= $i ?></a>
-                <?php  } else { ?>
-                    <a href="productlist.php?page=<?= $i ?>"><?= $i ?></a>
-                <?php   } ?>
-            <?php  } ?>
+        <a href="productlist.php?page=<?= ($page <= 1) ? 1 : $page - 1 ?>">&laquo;</a>
+        <?php for ($i = 1; $i <= $pageCount; $i++) {
+            if ($i == $page) { ?>
+                <a class="active" href="productlist.php?page=<?= $i ?>"><?= $i ?></a>
+            <?php } else { ?>
+                <a href="productlist.php?page=<?= $i ?>"><?= $i ?></a>
         <?php }
-        ?>
-        <a href="productlist.php?page=<?= (isset($_GET['page'])) ? $_GET['page'] + 1 : 2 ?>">&raquo;</a>
+        } ?>
+        <a href="productlist.php?page=<?= ($page < $pageCount) ? $page + 1 : $pageCount ?>">&raquo;</a>
     </div>
 
-    <?php
-    include '../inc/footer.php'
-    ?>
+    <?php include '../inc/footer.php'; ?>
 </body>
 
 </html>

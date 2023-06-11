@@ -1,20 +1,29 @@
 <?php
-include_once '../lib/session.php';
-Session::checkSession('admin');
-$role_id = Session::get('role_id');
-if ($role_id == 1) {
-    # code...
-} else {
+session_start();
+$role_id = $_SESSION['user_role'];
+if ($role_id !== 1) {
     header("Location:../index.php");
+    exit();
 }
-include_once '../classes/order.php';
+require '../util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
 
+
+// Kiểm tra xem orderId có được truyền vào hay không
 if (isset($_GET['orderId'])) {
-    $order = new order();
-    $result = $order->deliveringOrder($_GET['orderId']);
+    // Lấy orderId từ tham số truyền vào
+    $orderId = $_GET['orderId'];
+
+    // Cập nhật trạng thái đơn hàng thành "Delivering"
+    $query = "UPDATE orders SET status = 'Delivering' WHERE id = $orderId";
+    $result = mysqli_query($conn, $query);
+
+    // Kiểm tra kết quả cập nhật
     if ($result) {
-        echo '<script type="text/javascript">alert("Thành công!"); history.back();</script>';
+        echo '<script type="text/javascript">alert("Đơn hàng đang giao hàng!"); history.back();</script>';
     } else {
-        echo '<script type="text/javascript">alert("Thất bại!"); history.back();</script>';
+        echo '<script type="text/javascript">alert("Cập nhật trạng thái đơn hàng thất bại!"); history.back();</script>';
     }
+} else {
+    // Nếu không có orderId được truyền vào, quay lại trang trước đó
+    echo '<script type="text/javascript">history.back();</script>';
 }
