@@ -1,11 +1,14 @@
 <?php
-include_once 'lib/session.php';
-Session::checkSession('client');
-include 'classes/order.php';
+session_start();
+include 'util/connectDB.php';
 
-$order = new order();
-$result = $order->getOrderByUser();
-
+// Kiểm tra xem người dùng đã đăng nhập hay chưa
+if (!isset($_SESSION['user_id'])) {
+    // Nếu người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+    echo "<script>alert('Vui lòng đăng nhập.');</script>";
+    header('Location: login.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +33,19 @@ $result = $order->getOrderByUser();
         <h1 class="text-center">Đơn hàng</h1>
 
         <div class="container-single">
-            <?php if ($result) { ?>
+            <?php
+            $user_id = $_SESSION['user_id'];
+
+            $query = "SELECT * FROM users WHERE id = '$user_id'";
+            $result = mysqli_query($conn, $query);
+            $userInfo = mysqli_fetch_assoc($result);
+
+            $query = "SELECT * FROM orders WHERE userId = '$user_id'";
+            $result = mysqli_query($conn, $query);
+            $orders = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            ?>
+
+            <?php if (!empty($orders)) { ?>
                 <table class="order">
                     <tr>
                         <th class="text-center p-2">STT</th>
@@ -40,38 +55,45 @@ $result = $order->getOrderByUser();
                         <th class="text-center p-2">Tình trạng</th>
                         <th class="text-center p-2">Thao tác</th>
                     </tr>
-                    <?php $count = 1;
-                    foreach ($result as $key => $value) { ?>
+                    <?php
+                    $count = 1;
+                    foreach ($orders as $order) {
+                    ?>
                         <tr>
                             <td><?= $count++ ?></td>
-                            <td><?= $value['id'] ?></td>
-                            <td><?= $value['createdDate'] ?></td>
-                            <td><?= ($value['status'] != "Processing") ? $value['receivedDate'] : "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý" ?> <?= ($value['status'] != "Complete" && $value['status'] != "Processing") ? "(Dự kiến)" : "" ?> </td>
-                            <?php
-                            if ($value['status'] == 'Delivering') { ?>
-                                <td>
-                                    <a href="complete_order.php?orderId=<?= $value['id'] ?>">Đang giao (Click vào để xác nhận đã nhận)</a>
-                                </td>
-                                <td>
-                                    <a href="orderdetail.php?orderId=<?= $value['id'] ?>">Chi tiết</a>
-                                </td>
-                            <?php } else { ?>
-                                <td>
-                                    <?= $value['status'] ?>
-                                </td>
-                                <td>
-                                    <a href="orderdetail.php?orderId=<?= $value['id'] ?>">Chi tiết</a>
-                                </td>
-                            <?php }
-                            ?>
+                            <td><?= $order['id'] ?></td>
+                            <td><?= $order['createdDate'] ?></td>
+                            <td>
+                                <?php
+                                if ($order['status'] != "Processing") {
+                                    echo $order['receivedDate'];
+                                } else {
+                                    echo "Dự kiến 3 ngày sau khi đơn hàng đã được xử lý";
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($order['status'] == 'Delivering') {
+                                ?>
+                                    <a href="complete_order.php?orderId=<?= $order['id'] ?>">Đang giao (Click vào để xác nhận đã nhận)</a>
+                                <?php
+                                } else {
+                                    echo $order['status'];
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <a href="orderdetail.php?orderId=<?= $order['id'] ?>">Chi tiết</a>
+                            </td>
                         </tr>
-                    <?php } ?>
+                    <?php
+                    }
+                    ?>
                 </table>
             <?php } else { ?>
                 <h3>Đơn hàng hiện đang rỗng</h3>
             <?php } ?>
-
-
         </div>
     </div>
     <?php

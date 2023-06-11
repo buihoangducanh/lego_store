@@ -1,7 +1,7 @@
 <?php
 $filepath = realpath(dirname(__FILE__));
 include_once($filepath . '/../lib/session.php');
-require_once('util/connectDB.php');
+include_once($filepath . '/../util/connectDB.php');;
 ?>
 
 <?php

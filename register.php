@@ -1,17 +1,66 @@
 <?php
-include 'classes/user.php';
+// Kết nối đến cơ sở dữ liệu
+include_once("util/connectDB.php");
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Kiểm tra xem người dùng đã nhấn nút Đăng ký chưa
+if (isset($_POST['submit'])) {
+    // Lấy thông tin từ form đăng ký
+    $fullName = $_POST['fullName'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $repassword = $_POST['repassword'];
+    $phoneNumber = $_POST['phoneNumber'];
+    $address = $_POST['address'];
+    $dob = $_POST['dob'];
 
-    $result = user::insert($_POST);
-    if ($result === true) {
-        // Hiển thị thông báo JavaScript và chuyển hướng trang
-        echo "<script>alert('Đăng ký thành công!'); window.location.href='./login.php';</script>";
+    // Kiểm tra xem mật khẩu đã khớp chưa
+    if ($password != $repassword) {
+        // Nếu mật khẩu không khớp, hiển thị thông báo lỗi và dừng việc xử lý
+        $result = "Mật khẩu không khớp";
     } else {
-        // Hiển thị thông báo lỗi
-        echo "<script>alert('$result');</script>";
+        // Mật khẩu khớp, tiến hành thêm thông tin người dùng vào cơ sở dữ liệu
+        // Hash mật khẩu trước khi lưu vào cơ sở dữ liệu
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu hay chưa
+        $checkEmailQuery = "SELECT * FROM users WHERE email = ?";
+        $stmt = mysqli_prepare($conn, $checkEmailQuery);
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_num_rows($result) > 0) {
+            // Nếu email đã tồn tại, hiển thị thông báo lỗi và dừng việc xử lý
+            $result = "Email bạn vừa nhập đã được đăng ký trước đó";
+        } else {
+            // Mật khẩu khớp và email chưa tồn tại, tiến hành thêm thông tin người dùng vào cơ sở dữ liệu
+
+            // Tạo truy vấn INSERT để thêm thông tin người dùng mới vào bảng "users"
+            $insertQuery = "INSERT INTO users (email, fullname, dob, password, role_id, phone_number, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $user_role = 2;
+            $stmt = mysqli_prepare($conn, $insertQuery);
+            mysqli_stmt_bind_param($stmt, "ssssiss", $email, $fullName, $dob, $hashedPassword, $user_role, $phoneNumber, $address);
+
+
+            // Thực thi truy vấn INSERT
+            if (mysqli_stmt_execute($stmt)) {
+                // Nếu thêm người dùng thành công, hiển thị thông báo đăng ký thành công và chuyển hướng đến trang đăng nhập
+                echo "<script>alert('Đăng ký thành công'); 
+                window.location.href = 'login.php';</script>";
+                exit();
+            } else {
+                // Nếu có lỗi xảy ra trong quá trình thêm người dùng, hiển thị thông báo lỗi
+                echo "<script>alert('Đăng ký thất bại'); 
+                </script>";
+                exit();
+            }
+        }
     }
 }
+
+// Đóng kết nối đến cơ sở dữ liệu
+mysqli_close($conn);
+
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="text" id="fullName" name="fullName" placeholder="Họ tên..." required>
 
                     <label for="email">Email</label>
-                    <p class="error"><?= !empty($result) ? $result : '' ?></p>
                     <input type="email" id="email" name="email" placeholder="Email..." required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    <p class="error"><?= !empty($result) ? $result : '' ?></p>
 
                     <label for="password">Mật khẩu</label>
                     <input type="password" id="password" name="password" placeholder="Mật khẩu..." required>

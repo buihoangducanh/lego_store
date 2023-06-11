@@ -1,8 +1,25 @@
 <?php
-include 'classes/product.php';
+session_start();
+require 'util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
 
-$result = product::getProductbyId($_GET['id']);
+// Lấy giá trị của $id từ URL hoặc bất kỳ nguồn dữ liệu nào khác
+$id = $_GET['id'];
 
+// Truy vấn lấy chi tiết sản phẩm theo id
+$sql = "SELECT * FROM products WHERE id = '$id' AND status = 1";
+$result = mysqli_query($conn, $sql);
+
+// Kiểm tra kết quả truy vấn
+if (mysqli_num_rows($result) == 1) {
+    $result = mysqli_fetch_assoc($result);
+} else {
+    // Xử lý tương ứng nếu sản phẩm không tồn tại (ví dụ: chuyển hướng về trang 404)
+    header("Location: 404.php");
+    exit();
+}
+
+// Đóng kết nối đến cơ sở dữ liệu
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -10,7 +27,6 @@ $result = product::getProductbyId($_GET['id']);
 <?php include 'inc/metadata_cdnLib.php' ?>
 
 <head>
-
     <title><?= $result['name'] ?></title>
 </head>
 
@@ -49,11 +65,7 @@ $result = product::getProductbyId($_GET['id']);
             </div>
         </div>
     </div>
-
-
+    <?php include 'inc/footer.php' ?>
 </body>
-<?php
-include 'inc/footer.php'
-?>
 
 </html>

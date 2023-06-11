@@ -1,14 +1,37 @@
 <?php
-include_once 'lib/session.php';
-include_once 'classes/product.php';
-include_once 'classes/categories.php';
+session_start();
+?>
 
-$list = product::getProductsByCateId((isset($_GET['page']) ? $_GET['page'] : 1), (isset($_GET['cateId']) ? $_GET['cateId'] : 2));
-$pageCount = product::getCountPagingClient((isset($_GET['cateId']) ? $_GET['cateId'] : 2));
+<?php
+include 'util/connectDB.php';
 
 
-$categoriesList = categories::getAll();
+// Xử lý trang hiện tại và số sản phẩm trên mỗi trang
+$perPage = 8;
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$offset = ($page - 1) * $perPage;
 
+// Lấy danh mục từ cơ sở dữ liệu
+$query = "SELECT * FROM categories";
+$result = mysqli_query($conn, $query);
+$categoriesList = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Lấy danh sách sản phẩm theo danh mục và phân trang
+$cateId = isset($_GET['cateId']) ? $_GET['cateId'] : 2;
+$sql = "SELECT * FROM products WHERE cateId = '$cateId' AND status = 1 LIMIT $offset, $perPage";
+$result = mysqli_query($conn, $sql);
+$list = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Đếm số lượng sản phẩm để tính toán số trang
+$sqlCount = "SELECT COUNT(*) AS total FROM products WHERE cateId = '$cateId' AND status = 1";
+$resultCount = mysqli_query($conn, $sqlCount);
+$rowCount = mysqli_fetch_assoc($resultCount);
+$totalProducts = $rowCount['total'];
+$pageCount = ceil($totalProducts / $perPage);
+
+mysqli_free_result($result);
+mysqli_free_result($resultCount);
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -26,16 +49,16 @@ $categoriesList = categories::getAll();
         <h1 class="text-center text-light">Danh sách sản phẩm</h1>
 
         <div class="category" style="margin-left: 200px;">
-            <span class="text-light" style="margin-bottom: 20px;
-    display: inline-block;">Danh mục:</span> <select onchange="location = this.value;">
+            <span class="text-light" style="margin-bottom: 20px; display: inline-block;">Danh mục:</span>
+            <select onchange="location = this.value;">
                 <?php
                 foreach ($categoriesList as $key => $value) {
-                    if ($value['id'] == $_GET['cateId']) { ?>
-                        <option selected value="productList.php?cateId=<?= $value['id'] ?>"><?= $value['name'] ?></option>
-                    <?php } else { ?>
-                        <option value="productList.php?cateId=<?= $value['id'] ?>"><?= $value['name'] ?></option>
-                    <?php } ?>
-                <?php }
+                    if ($value['id'] == $cateId) {
+                        echo '<option selected value="productList.php?cateId=' . $value['id'] . '">' . $value['name'] . '</option>';
+                    } else {
+                        echo '<option value="productList.php?cateId=' . $value['id'] . '">' . $value['name'] . '</option>';
+                    }
+                }
                 ?>
             </select>
         </div>
@@ -59,11 +82,12 @@ $categoriesList = categories::getAll();
                         </div>
                         <div class="original-price">
                             <?php
-                            if ($value['promotionPrice'] < $value['originalPrice']) { ?>
-                                Giá gốc: <del><?= number_format($value['originalPrice'], 0, '', ',') ?>VND</del>
-                            <?php } else { ?>
-                                <p>.</p>
-                            <?php } ?>
+                            if ($value['promotionPrice'] < $value['originalPrice']) {
+                                echo 'Giá gốc: <del>' . number_format($value['originalPrice'], 0, '', ',') . 'VND</del>';
+                            } else {
+                                echo '<p>.</p>';
+                            }
+                            ?>
                         </div>
                         <div class="price">
                             Giá bán: <?= number_format($value['promotionPrice'], 0, '', ',') ?>VND
@@ -82,25 +106,20 @@ $categoriesList = categories::getAll();
         ?>
     </div>
     <div class="pagination">
-        <a href="productList.php?page=<?= (isset($_GET['page'])) ? (($_GET['page'] <= 1) ? 1 : $_GET['page'] - 1) : 1 ?>&cateId=<?= (isset($_GET['cateId'])) ? $_GET['cateId'] : 2 ?>">&laquo;</a>
+        <a href="productList.php?page=<?= ($page <= 1) ? 1 : $page - 1 ?>&cateId=<?= $cateId ?>">&laquo;</a>
         <?php
         for ($i = 1; $i <= $pageCount; $i++) {
-            if (isset($_GET['page'])) {
-                if ($i == $_GET['page']) { ?>
-                    <a class="active" href="productList.php?page=<?= $i ?>&cateId=<?= (isset($_GET['cateId'])) ? $_GET['cateId'] : 2 ?>"><?= $i ?></a>
-                <?php } else { ?>
-                    <a href="productList.php?page=<?= $i ?>&cateId=<?= (isset($_GET['cateId'])) ? $_GET['cateId'] : 2 ?>"><?= $i ?></a>
-                <?php  }
-            } else { ?>
-                <a href="productList.php?page=<?= $i ?>&cateId=<?= (isset($_GET['cateId'])) ? $_GET['cateId'] : 2 ?>"><?= $i ?></a>
-            <?php  } ?>
-        <?php }
+            if ($i == $page) {
+                echo '<a class="active" href="productList.php?page=' . $i . '&cateId=' . $cateId . '">' . $i . '</a>';
+            } else {
+                echo '<a href="productList.php?page=' . $i . '&cateId=' . $cateId . '">' . $i . '</a>';
+            }
+        }
         ?>
-        <a href="productList.php?page=<?= (isset($_GET['page'])) ? $_GET['page'] + 1 : 2 ?>&cateId=<?= (isset($_GET['cateId'])) ? $_GET['cateId'] : 2 ?>">&raquo;</a>
+        <a href="productList.php?page=<?= $page + 1 ?>&cateId=<?= $cateId ?>">&raquo;</a>
     </div>
 </body>
-<?php
-include 'inc/footer.php'
-?>
+
+<?php include 'inc/footer.php' ?>
 
 </html>

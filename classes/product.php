@@ -1,6 +1,6 @@
 <?php
 $filepath = realpath(dirname(__FILE__));
-include_once($filepath . '/../util/connectDB.php');
+include_once('util/connectDB.php');
 include_once($filepath . '/../lib/session.php');
 ?>
 
@@ -32,7 +32,7 @@ class product
 
         move_uploaded_file($file_temp, $uploaded_image);
         $query = "INSERT INTO products VALUES (NULL,'$name','$originalPrice','$promotionPrice','$unique_image'," . Session::get('userId') . ",'" . date('Y/m/d') . "','$cateId','$qty','$des',1,0) ";
-        $conn = connectDB();
+
 
         $result = mysqli_query($conn, $query);
         $conn->close();
@@ -78,7 +78,7 @@ class product
     public static function getCountPaging($row = 8)
     {
         $query = "SELECT COUNT(*) FROM products";
-        $conn = connectDB();
+
         $mysqli_result = mysqli_query($conn, $query);
         $conn->close();
         if ($mysqli_result) {
@@ -92,9 +92,9 @@ class product
     public static function getCountPagingClient($cateId, $row = 8)
     {
         $query = "SELECT COUNT(*) FROM products WHERE cateId = $cateId";
-        $conn = connectDB();
+
         $mysqli_result = mysqli_query($conn, $query);
-        $conn->close();
+
         if ($mysqli_result) {
             $totalrow = intval((mysqli_fetch_all($mysqli_result, MYSQLI_ASSOC)[0])['COUNT(*)']);
             $result = ceil($totalrow / $row);

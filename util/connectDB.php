@@ -1,17 +1,13 @@
 <?php
-// Include file config.php chứa các hằng số cấu hình kết nối cơ sở dữ liệu
-$filepath = realpath(dirname(__FILE__));
-include($filepath . '/../config/config.php');
+$servername = "localhost:3307";
+$username = "root";
+$password = "";
+$dbname = "legostore";
 
-// Hàm kết nối cơ sở dữ liệu
-function connectDB()
-{
-    // Kết nối đến cơ sở dữ liệu
-    $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-    // Kiểm tra kết nối
-    if (!$conn) {
-        die("Kết nối thất bại: " . mysqli_connect_error());
-    }
-    return $conn;
+// Check connection
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
 }

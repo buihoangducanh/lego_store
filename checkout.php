@@ -1,17 +1,56 @@
 <?php
-include_once 'lib/session.php';
-Session::checkSession('client');
-include_once 'classes/cart.php';
-include_once 'classes/user.php';
+session_start(); // Bắt đầu session
+include 'util/connectDB.php'; // Kết nối CSDL
 
-$cart = new cart();
-$list = $cart->get();
-$totalPrice = $cart->getTotalPriceByUserId();
-$totalQty = $cart->getTotalQtyByUserId();
+// Kiểm tra xem người dùng đã đăng nhập hay chưa
+if (!isset($_SESSION['user_id'])) {
+    // Nếu người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+    echo "<script>alert('Vui lòng đăng nhập.');</script>";
+    header('Location: login.php');
+    exit;
+}
 
-$user = new user();
-$userInfo = $user->get();
+
+// Lấy thông tin từ session
+if (isset($_SESSION['cart'])) {
+    $cart = $_SESSION['cart'];
+} else {
+    $cart = array(); // Khởi tạo giỏ hàng nếu chưa tồn tại
+}
+$user_fullname = $_SESSION['user_fullname'];
+$user_id = $_SESSION['user_id'];
+
+// Lấy thông tin người dùng từ CSDL
+$query = "SELECT * FROM users WHERE id = '$user_id'";
+$result = mysqli_query($conn, $query);
+$userInfo = mysqli_fetch_assoc($result);
+
+// Lấy dữ liệu từ CSDL và gán giá trị cho các biến
+$list = array(); // Biến chứa danh sách sản phẩm trong giỏ hàng
+$totalQty = 0; // Biến chứa tổng số lượng sản phẩm
+$totalPrice = 0; // Biến chứa tổng giá tiền
+
+// Truy vấn CSDL để lấy thông tin về các sản phẩm trong giỏ hàng
+if ($cart) {
+    foreach ($cart as $productId => $info) {
+        // Thực hiện truy vấn để lấy thông tin sản phẩm với $productId từ CSDL
+        $result = mysqli_query($conn, "SELECT * FROM products WHERE id = '$productId'");
+
+        // Gán thông tin sản phẩm vào biến $productInfo
+        $productInfo = mysqli_fetch_assoc($result);
+
+        // Tính toán tổng số lượng và tổng giá tiền
+        $qty = $info['quantity'];
+        $totalQty += $qty;
+        $totalPrice += $productInfo['promotionPrice'] * $qty;
+
+        // Thêm thông tin sản phẩm vào danh sách
+        $productInfo['qty'] = $qty;
+        $list[] = $productInfo;
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +58,34 @@ $userInfo = $user->get();
 <head>
     <?php include 'inc/metadata_cdnLib.php' ?>
     <title>Checkout</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".qty").on("change", function() {
+                var productId = $(this).attr("id");
+                var newQty = parseInt($(this).val());
+
+                if (newQty < 1) {
+                    $(this).val(1);
+                    newQty = 1;
+                }
+
+                $.ajax({
+                    url: "update_cart.php",
+                    method: "POST",
+                    data: {
+                        productId: productId,
+                        quantity: newQty
+                    },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        $("#qtycart").text(data.totalQuantity);
+                        $("#totalcart").text(data.totalPrice.toLocaleString() + "VND");
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -41,17 +108,17 @@ $userInfo = $user->get();
                 </tr>
                 <?php
                 $count = 1;
-                foreach ($list as $key => $value) { ?>
+                foreach ($list as $productId => $info) { ?>
                     <tr>
                         <td><?= $count++ ?></td>
-                        <td><?= $value['productName'] ?></td>
-                        <td><img class="image-cart" src="admin/uploads/<?= $value['productImage'] ?>"></td>
-                        <td><?= number_format($value['productPrice'], 0, '', ',') ?>VND </td>
+                        <td><?= $info['name'] ?></td>
+                        <td><img class="image-cart" src="admin/uploads/<?= $info['image'] ?>"></td>
+                        <td><?= number_format($info['promotionPrice'], 0, '', ',') ?>VND </td>
                         <td>
-                            <input id="<?= $value['productId'] ?>" type="number" name="qty" class="qty" value="<?= $value['qty'] ?>" onchange="update(this)" min="1">
+                            <input id="<?= $info['id'] ?>" type="number" name="qty" class="qty" value="<?= $info['qty'] ?>" min="1">
                         </td>
                         <td>
-                            <a href="delete_cart.php?id=<?= $value['id'] ?>">Xóa</a>
+                            <a href="delete_cart.php?id=<?= $info['id'] ?>">Xóa</a>
                         </td>
                     </tr>
                 <?php }
@@ -61,16 +128,16 @@ $userInfo = $user->get();
                 <div class="buy">
                     <h3>Thông tin đơn đặt hàng</h3>
                     <div>
-                        Người đặt hàng: <b><?= $userInfo['fullname'] ?></b>
+                        Người đặt hàng: <b><?= $user_fullname ?></b>
                     </div>
                     <div>
-                        Số lượng: <b id="qtycart"><?= $totalQty['total'] ?></b>
+                        Số lượng: <b id="qtycart"><?= $totalQty ?></b>
                     </div>
                     <div>
-                        Tổng tiền: <b id="totalcart"><?= number_format($totalPrice['total'], 0, '', ',') ?>VND</b>
+                        Tổng tiền: <b id="totalcart"><?= number_format($totalPrice, 0, '', ',') ?>VND</b>
                     </div>
                     <div>
-                        Số điện thoại: <b><?= $userInfo['address'] ?></b>
+                        Số điện thoại: <b><?= $userInfo['phone_number'] ?></b>
                     </div>
                     <div>
                         Địa chỉ nhận hàng: <b><?= $userInfo['address'] ?></b>
@@ -89,56 +156,5 @@ $userInfo = $user->get();
     include 'inc/footer.php'
     ?>
 </body>
-
-<script type="text/javascript">
-    function update(e) {
-        var http = new XMLHttpRequest();
-        var url = 'update_cart.php';
-        var params = "productId=" + e.id + "&qty=" + e.value;
-        http.open('POST', url, true);
-
-        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-        http.onreadystatechange = function() {
-            if (http.readyState === XMLHttpRequest.DONE) {
-                var status = http.status;
-                if (status === 200) {
-                    var arr = http.responseText;
-                    var b = false;
-                    var result = "";
-                    for (let index = 0; index < arr.length; index++) {
-                        if (arr[index] == "[") {
-                            b = true;
-                        }
-                        if (b) {
-                            result += arr[index];
-                        }
-                    }
-                    var arrResult = JSON.parse(result.replace("undefined", ""));
-                    console.log(arrResult);
-                    document.getElementById("totalQtyHeader").innerHTML = arrResult[1]['total'];
-                    document.getElementById("qtycart").innerHTML = arrResult[1]['total'];
-                    document.getElementById("totalcart").innerHTML = arrResult[0]['total'].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + "VND";
-
-                } else if (status === 501) {
-                    alert('Số lượng sản phẩm không đủ để thêm vào giỏ hàng!');
-                    e.value = parseInt(e.value) - 1;
-                } else {
-                    alert('Cập nhật giỏ hàng thất bại!');
-                    window.location.reload();
-                }
-            }
-
-        }
-        http.send(params);
-    }
-
-    var list = document.getElementsByClassName("qty");
-    for (let item of list) {
-        item.addEventListener("keypress", function(evt) {
-            evt.preventDefault();
-        });
-    }
-</script>
 
 </html>

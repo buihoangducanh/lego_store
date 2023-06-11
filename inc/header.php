@@ -8,7 +8,7 @@
             <li><a href="productList.php" <?php if (basename($_SERVER['PHP_SELF']) == 'productList.php') {
                                                 echo 'class="active"';
                                             } ?>>Sản phẩm</a></li>
-            <?php if (isset($_SESSION['user']) && $_SESSION['user']) { ?>
+            <?php if (isset($_SESSION['user_id'])) { ?>
                 <li><a href="edit_profile.php" id="edit_profile" <?php if (basename($_SERVER['PHP_SELF']) == 'edit_profile.php') {
                                                                         echo 'class="active"';
                                                                     } ?>>Chỉnh sửa thông tin</a></li>

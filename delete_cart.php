@@ -1,14 +1,24 @@
 <?php
-include_once 'lib/session.php';
-Session::checkSession('client');
-include_once 'classes/cart.php';
+session_start(); // Bắt đầu session
+// Kiểm tra xem người dùng đã đăng nhập hay chưa
+if (!isset($_SESSION['user_id'])) {
+    // Nếu người dùng chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang đăng nhập
+    echo "<script>alert('Vui lòng đăng nhập.');</script>";
+    header('Location: login.php');
+    exit;
+}
+
 
 if (isset($_GET['id'])) {
-    $cart = new cart();
-    $result = $cart->delete($_GET['id']);
-    if ($result) {
-        echo '<script type="text/javascript">alert("Xóa sản phẩm khỏi giỏ hàng thành công!"); history.back();</script>';
-    } else {
-        echo '<script type="text/javascript">alert("Xóa sản phẩm khỏi giỏ hàng thất bại!"); history.back();</script>';
+    $productId = $_GET['id'];
+
+    // Xoá sản phẩm ra khỏi giỏ hàng
+    if (isset($_SESSION['cart'][$productId])) {
+        unset($_SESSION['cart'][$productId]);
     }
 }
+
+// Điều hướng trở lại trang giỏ hàng và hiển thị thông báo
+$message = "Sản phẩm đã được xoá khỏi giỏ hàng.";
+echo "<script>alert('$message'); window.location.href = 'checkout.php';</script>";
+exit();
