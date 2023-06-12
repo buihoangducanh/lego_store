@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3307
--- Thời gian đã tạo: Th6 11, 2023 lúc 06:04 PM
+-- Thời gian đã tạo: Th6 12, 2023 lúc 02:36 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.2.4
 
@@ -58,17 +58,22 @@ CREATE TABLE `orders` (
   `total` decimal(13,2) DEFAULT NULL,
   `createdDate` datetime NOT NULL DEFAULT current_timestamp(),
   `receivedDate` datetime DEFAULT NULL,
-  `status` varchar(20) NOT NULL
+  `status` varchar(20) NOT NULL,
+  `cancelled_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `userId`, `total`, `createdDate`, `receivedDate`, `status`) VALUES
-(45, 39, 4598000.00, '2023-06-11 17:43:29', '2023-06-11 13:38:34', 'Complete'),
-(46, 39, 3827000.00, '2023-06-11 18:42:17', '2023-06-11 18:43:12', 'Complete'),
-(47, 39, 5949000.00, '2023-06-11 18:45:30', '2023-06-14 00:00:00', 'Delivering');
+INSERT INTO `orders` (`id`, `userId`, `total`, `createdDate`, `receivedDate`, `status`, `cancelled_date`) VALUES
+(45, 39, 4598000.00, '2023-06-11 17:43:29', '2023-06-11 13:38:34', 'Complete', NULL),
+(46, 39, 3827000.00, '2023-06-11 18:42:17', '2023-06-11 18:43:12', 'Complete', NULL),
+(47, 39, 5949000.00, '2023-06-11 18:45:30', '2023-06-14 00:00:00', 'Delivering', NULL),
+(48, 39, 629000.00, '2023-06-11 23:27:33', NULL, 'Cancelled', NULL),
+(49, 39, 7299000.00, '2023-06-12 06:34:29', NULL, 'Cancelled', '2023-06-12 01:47:21'),
+(50, 40, 629000.00, '2023-06-12 06:51:00', NULL, 'Cancelled', '2023-06-12 06:51:04'),
+(51, 40, 2398000.00, '2023-06-12 07:03:10', '2023-06-12 07:03:56', 'Complete', NULL);
 
 -- --------------------------------------------------------
 
@@ -95,7 +100,12 @@ INSERT INTO `order_details` (`id`, `orderId`, `productId`, `qty`, `productPrice`
 (46, 46, 2, 2, 1599000, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 'GT_Heritage_Edition_Bronco_R.jpg'),
 (47, 46, 3, 1, 629000, 'Chiến Xe Monster Jam Grave Digger', 'Monster_Jam_Grave_Digger.jpg'),
 (48, 47, 4, 1, 949000, 'Ca nô Đệm Khí Cứu Hộ', 'LEGO_TECHNIC_42120.jpg'),
-(49, 47, 5, 1, 5000000, 'Xe Vận Tải Hạng Nặng', 'Xe_Van_Tai_Hang_Nang.jpg');
+(49, 47, 5, 1, 5000000, 'Xe Vận Tải Hạng Nặng', 'Xe_Van_Tai_Hang_Nang.jpg'),
+(50, 48, 3, 1, 629000, 'Chiến Xe Monster Jam Grave Digger', 'Monster_Jam_Grave_Digger.jpg'),
+(51, 49, 9, 1, 2299000, 'Trung Tâm Mua Sắm Heartlake', 'trung_tam_mua_sam_heartlake.jpg'),
+(52, 49, 5, 1, 5000000, 'Xe Vận Tải Hạng Nặng', 'Xe_Van_Tai_Hang_Nang.jpg'),
+(53, 50, 3, 1, 629000, 'Chiến Xe Monster Jam Grave Digger', 'Monster_Jam_Grave_Digger.jpg'),
+(54, 51, 2, 2, 1199000, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 'GT_Heritage_Edition_Bronco_R.jpg');
 
 -- --------------------------------------------------------
 
@@ -123,7 +133,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `originalPrice`, `promotionPrice`, `image`, `createdBy`, `createdDate`, `cateId`, `qty`, `des`, `status`, `soldCount`) VALUES
-(2, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 1999999, 1199000, 'GT_Heritage_Edition_Bronco_R.jpg', 1, '0000-00-00', 2, 54, 'Trẻ em và những người đam mê ô tô sẽ thích bộ đồ chơi xây dựng LEGO Speed Champions 76905 Siêu Xe Đua Ford GT Heritage Edition & Bronco R (660 chi tiết) này. Được đóng gói với các chi tiết thực tế, những mô hình sao chép tuyệt vời này mang lại trải nghiệm xây dựng bổ ích, trông tuyệt vời khi trưng bày và tuyệt vời cho sử thi hành động đua off-road và trên đường đua! Chi tiết đầy cảm hứng! Những chiếc xe trong vở kịch này có khung gầm rộng, cho phép đủ chỗ cho khoang lái 2 chỗ ngồi và thậm chí còn có nhiều chi tiết chân thực hơn.', 1, 7),
+(2, 'Siêu Xe Đua Ford GT Heritage Edition & Bronco R', 1999999, 1199000, 'GT_Heritage_Edition_Bronco_R.jpg', 1, '0000-00-00', 2, 54, 'Trẻ em và những người đam mê ô tô sẽ thích bộ đồ chơi xây dựng LEGO Speed Champions 76905 Siêu Xe Đua Ford GT Heritage Edition & Bronco R (660 chi tiết) này. Được đóng gói với các chi tiết thực tế, những mô hình sao chép tuyệt vời này mang lại trải nghiệm xây dựng bổ ích, trông tuyệt vời khi trưng bày và tuyệt vời cho sử thi hành động đua off-road và trên đường đua! Chi tiết đầy cảm hứng! Những chiếc xe trong vở kịch này có khung gầm rộng, cho phép đủ chỗ cho khoang lái 2 chỗ ngồi và thậm chí còn có nhiều chi tiết chân thực hơn.', 1, 9),
 (3, 'Chiến Xe Monster Jam Grave Digger', 900000, 629000, 'Monster_Jam_Grave_Digger.jpg', 1, '0000-00-00', 2, 19, 'Bạn đang tìm một món đồ chơi hoặc món quà thú vị cho những bé trai và bé gái yêu thích xe tải Monster Jam®? Xe tải kéo LEGO TECHNIC 42118 Chiến Xe Monster Jam Grave Digger ( 212 Chi tiết) được tích hợp các tính năng mà trẻ em sẽ thích. Những nét chấm phá chân thực bao gồm đồ họa Grave Digger với các chi tiết huyền bí, cùng với lốp xe khổng lồ, lá cờ có thể di chuyển và đèn pha màu đỏ.', 1, 1),
 (4, 'Ca nô Đệm Khí Cứu Hộ', 1000000, 949000, 'LEGO_TECHNIC_42120.jpg', 1, '0000-00-00', 2, 14, 'Bạn đang tìm kiếm món quà hoàn hảo cho những trẻ thích những chiếc xe thú vị? Chắc chắn các bé sẽ thích món đồ chơi LEGO® Technic ™ Ca nô Đệm Khí Cứu Hộ (42120) này. Được trang bị đầy đủ các tính năng đích thực, Ca nô Đệm Khí Cứu Hộ hoàn hảo để tái tạo các nhiệm vụ cứu hộ gay cấn. Các bé trai và bé gái từ 8 tuổi trở lên sẽ thích nhìn chiếc xe đồ chơi bay lơ lửng khi nó lăn trên các bánh xe được giấu kín.', 1, 6),
 (5, 'Xe Vận Tải Hạng Nặng', 5500000, 5000000, 'Xe_Van_Tai_Hang_Nang.jpg', 1, '0000-00-00', 2, 7, 'Đồ Chơi LEGO Xe Vận Tải Hạng Nặng 42128', 1, 3),
@@ -185,7 +195,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `fullname`, `dob`, `password`, `role_id`, `status`, `address`, `phone_number`) VALUES
 (1, 'anhbui26@gmail.com', 'Bùi Hoàng Đức Anh', '2008-06-04', '$2a$12$fB68vD2t/Ouo1xFbOnM9Lu6m76LBz7.xpCJxE8lSnICCfOlqm5dnS', 1, 1, 'Cầu giấy, Hà nội', '0999222222'),
-(39, 'anhbui@gmail.com', 'Bùi Hoàng Đức Anh', '2015-02-12', '$2y$10$CCwUQbfnmEuRVHNAnbbAaO0JvTUHeFLWhMSpWAJkHMUCSUS5JYMAq', 2, 1, 'Hà đông', '0987222888'),
+(39, 'anhbui@gmail.com', 'Bùi Hoàng Đức Anh', '2015-02-12', '$2a$12$0PtyIpc.EofbPpT1ILBmMeNxuFMS0p8zgen5zQ6.XzBlXznbyiG.K', 2, 1, 'Hà đông', '0987222888'),
 (40, 'admin@gmail.com', 'Bùi Hoàng Đức Anh', '2002-11-26', '$2y$10$2CcP9fdmMx686TpnyYgc2ed9qNlpYhF4wmByLaeSrH7gA/Akr9u5S', 1, 1, 'Cầu Giấy, Hà Nội', '0348641180'),
 (41, 'test@gmail.com', 'TEST USER', '2023-06-29', '$2y$10$4QhE7XcqwUfcttkFqkTU...rOrBU8dkh5LgdFRqkS3iBU5GwaEQUi', 2, 1, 'TEST', '0987222787');
 
@@ -248,13 +258,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
