@@ -78,9 +78,14 @@ $itemsList = mysqli_query($conn, $query);
                     </tr>
                 <?php } ?>
             </table>
+
         </div>
+        <?php if ($order['status'] == 'Processing') { ?>
+            <div class="d-flex justify-content-center"><a style="padding: 20px 100px" class="btn btn-danger mt-4" href="cancel_order.php?orderId=<?= $_GET['orderId'] ?>">Huỷ đơn hàng</a></div>
+
+        <?php } ?>
     </div>
-    </div>
+
 </body>
 <?php
 include 'inc/footer.php'

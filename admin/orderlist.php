@@ -45,8 +45,17 @@ if (mysqli_num_rows($resultComplete) > 0) {
         $completeOrderList[] = $rowComplete;
     }
 }
+// Lấy danh sách đơn hàng bị hủy
+$cancelledOrderList = array();
+$sqlCancelled = "SELECT * FROM orders WHERE status = 'Cancelled'";
+$resultCancelled = mysqli_query($conn, $sqlCancelled);
+if (mysqli_num_rows($resultCancelled) > 0) {
+    while ($rowCancelled = mysqli_fetch_assoc($resultCancelled)) {
+        $cancelledOrderList[] = $rowCancelled;
+    }
+}
 
-include 'inc/metadata_libs.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,6 +77,7 @@ include 'inc/metadata_libs.php';
             <button class="tablinks" style="width: 200px;" onclick="openTab(event, 'Processed')">Đã xử lý</button>
             <button class="tablinks" style="width: 200px;" onclick="openTab(event, 'Delivering')">Đang giao hàng</button>
             <button class="tablinks" style="width: 200px;" onclick="openTab(event, 'Complete')">Đã hoàn thành</button>
+            <button class="tablinks" style="width: 200px;" onclick="openTab(event, 'Cancelled')">Đã hủy</button>
         </div>
 
         <!-- Tab content -->
@@ -234,8 +244,41 @@ include 'inc/metadata_libs.php';
                 <h3>Chưa có đơn hàng nào đã hoàn thành</h3>
             <?php } ?>
         </div>
+
+        <div id="Cancelled" class="tabcontent">
+            <?php if (!empty($cancelledOrderList)) { ?>
+                <table class="list">
+                    <tr>
+                        <th class="text-center p-2">STT</th>
+                        <th class="text-center p-2">Mã đơn hàng</th>
+                        <th class="text-center p-2">Ngày đặt</th>
+                        <th class="text-center p-2">Ngày hủy</th>
+                        <th class="text-center p-2">Tình trạng</th>
+                        <th class="text-center p-2">Thao tác</th>
+                    </tr>
+                    <?php
+                    $count = 1;
+                    foreach ($cancelledOrderList as $order) {
+                    ?>
+                        <tr>
+                            <td><?php echo $count++; ?></td>
+                            <td><?php echo $order['id']; ?></td>
+                            <td><?php echo $order['createdDate']; ?></td>
+                            <td><?php echo $order['cancelled_date']; ?></td>
+                            <td><?php echo $order['status']; ?></td>
+                            <td>
+                                <a href="orderlistdetail.php?orderId=<?php echo $order['id']; ?>">Chi tiết</a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </table>
+            <?php } else { ?>
+                <h3>Chưa có đơn hàng nào bị hủy</h3>
+            <?php } ?>
+        </div>
+
     </div>
-    </div>
+
 
     <?php include '../inc/footer.php' ?>
 </body>

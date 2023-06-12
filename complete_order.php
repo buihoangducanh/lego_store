@@ -22,6 +22,22 @@ $currentDate = date('Y-m-d H:i:s');
 $query = "UPDATE orders SET status = 'Complete', receivedDate = '$currentDate' WHERE id = $orderId";
 $result = mysqli_query($conn, $query);
 
+// Lấy thông tin sản phẩm từ bảng order_details
+$query = "SELECT productId, qty FROM order_details WHERE orderId = $orderId";
+$result = mysqli_query($conn, $query);
+
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $productId = $row['productId'];
+        $qty = $row['qty'];
+
+        // Cập nhật số lượng sản phẩm đã bán (soldCount) trong bảng products
+        $updateQuery = "UPDATE products SET soldCount = soldCount + $qty WHERE id = $productId";
+        mysqli_query($conn, $updateQuery);
+    }
+}
+
+
 if ($result) {
     echo '<script>alert("Đã xác nhận đã nhận hàng thành công!");</script>';
     echo '<script>window.location.href = "order.php";</script>';
