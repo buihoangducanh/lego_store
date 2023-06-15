@@ -32,16 +32,6 @@
 
     if (mysqli_num_rows($product_result) > 0) {
         while ($row = mysqli_fetch_assoc($product_result)) {
-            $productId = $row['productId'];
-
-            // Truy vấn và lấy thông tin chi tiết của từng sản phẩm
-            $product_info_query = "SELECT * FROM products WHERE id = $productId";
-            $product_info_result = mysqli_fetch_assoc(mysqli_query($conn, $product_info_query));
-
-            $row['productName'] = $product_info_result['name'];
-            $row['productImage'] = $product_info_result['image'];
-            $row['productPrice'] = $product_info_result['originalPrice'];
-
             $result[] = $row;
         }
     }
