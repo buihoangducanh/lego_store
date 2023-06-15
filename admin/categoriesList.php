@@ -29,6 +29,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     alert('Mở khoá danh mục với id $categoryId');
                  </script>";
         }
+    } elseif (isset($_POST['delete'])) {
+        $categoryId = $_POST['id'];
+        // Thực hiện xoá danh mục
+        $query = "DELETE FROM categories WHERE id = '$categoryId'";
+        $result = mysqli_query($conn, $query);
+        if ($result) {
+            echo "<script>
+                    alert('Đã xoá danh mục với id $categoryId');
+                 </script>";
+        }
     }
 }
 // Lấy danh sách danh mục từ cơ sở dữ liệu
@@ -92,6 +102,10 @@ $list = mysqli_fetch_all($resultList, MYSQLI_ASSOC);
                                     <input type="submit" value="Mở" name="active">
                                 </form>
                             <?php } ?>
+                            <form action="categoriesList.php" method="post" style="display: inline;">
+                                <input type="hidden" name="id" value="<?= $value['id'] ?>">
+                                <input type="submit" value="Xoá" name="delete" onclick="return confirm('Bạn có chắc chắn muốn xoá danh mục này?')">
+                            </form>
                         </td>
                     </tr>
                 <?php } ?>

@@ -7,31 +7,40 @@ if ($role_id !== 1) {
 }
 require '../util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
 
-// Xử lý khóa/mở sản phẩm
+// Xử lý khóa/mở/xoá sản phẩm
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['block'])) {
+        // Khóa sản phẩm
         $productId = $_POST['id'];
-        // Thực hiện khóa sản phẩm (cập nhật trạng thái)
         $query = "UPDATE products SET status = 0 WHERE id = '$productId'";
         $result = mysqli_query($conn, $query);
         if ($result) {
             echo "<script>
-                    alert('Đã khoá sản phẩm id $productId');
+                    alert('Đã khóa sản phẩm ID $productId');
                  </script>";
         }
     } elseif (isset($_POST['active'])) {
+        // Mở sản phẩm
         $productId = $_POST['id'];
-        // Thực hiện mở sản phẩm (cập nhật trạng thái)
         $query = "UPDATE products SET status = 1 WHERE id = '$productId'";
         $result = mysqli_query($conn, $query);
         if ($result) {
             echo "<script>
-                    alert('Mở khoá sản phẩm id $productId');
+                    alert('Đã mở sản phẩm ID $productId');
+                 </script>";
+        }
+    } elseif (isset($_POST['delete'])) {
+        // Xoá sản phẩm
+        $productId = $_POST['id'];
+        $query = "DELETE FROM products WHERE id = '$productId'";
+        $result = mysqli_query($conn, $query);
+        if ($result) {
+            echo "<script>
+                    alert('Đã xoá sản phẩm ID $productId');
                  </script>";
         }
     }
 }
-
 
 // Phân trang
 $perPage = 8; // Số sản phẩm hiển thị trên mỗi trang
@@ -110,18 +119,21 @@ $pageCount = ceil($totalProducts / $perPage);
                         <td><?= ($value['status']) ? "Active" : "Block" ?></td>
                         <td class="p-2">
                             <a href="edit_product.php?id=<?= $value['id'] ?>">Xem/Sửa</a>
-                            <?php
-                            if ($value['status']) { ?>
+                            <?php if ($value['status']) { ?>
                                 <form action="productlist.php" method="post">
-                                    <input type="text" name="id" hidden value="<?= $value['id'] ?>" style="display: none;">
+                                    <input type="hidden" name="id" value="<?= $value['id'] ?>">
                                     <input type="submit" value="Khóa" name="block">
                                 </form>
                             <?php } else { ?>
                                 <form action="productlist.php" method="post">
-                                    <input type="text" name="id" hidden value="<?= $value['id'] ?>" style="display: none;">
+                                    <input type="hidden" name="id" value="<?= $value['id'] ?>">
                                     <input type="submit" value="Mở" name="active">
                                 </form>
                             <?php } ?>
+                            <form id="deleteForm_<?= $value['id'] ?>" action="productlist.php" method="post">
+                                <input type="hidden" name="id" value="<?= $value['id'] ?>">
+                                <input onclick="return confirm('Bạn có chắc chắn muốn xoá sản phẩm này?')" type="submit" value="Xoá" name="delete">
+                            </form>
                         </td>
                     </tr>
                 <?php } ?>
