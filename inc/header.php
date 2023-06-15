@@ -1,7 +1,14 @@
+<?php
+$role_id = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : null;
+?>
+
 <header>
     <nav style="background-color: #ffcf00;">
         <div class="logo text-danger"><img src="images/LEGO_logo.svg.png" alt=""></div>
         <ul>
+            <?php if ($role_id == 1) { ?>
+                <li><a href="admin/index.php">Admin</a></li>
+            <?php } ?>
             <li><a href="index.php" <?php if (basename($_SERVER['PHP_SELF']) == 'index.php') {
                                         echo 'class="active"';
                                     } ?>>Trang chủ</a></li>
