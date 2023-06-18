@@ -36,10 +36,6 @@ if (!isset($_SESSION['user_id'])) {
             <?php
             $user_id = $_SESSION['user_id'];
 
-            $query = "SELECT * FROM users WHERE id = '$user_id'";
-            $result = mysqli_query($conn, $query);
-            $userInfo = mysqli_fetch_assoc($result);
-
             $query = "SELECT * FROM orders WHERE userId = '$user_id'";
             $result = mysqli_query($conn, $query);
             $orders = mysqli_fetch_all($result, MYSQLI_ASSOC);
