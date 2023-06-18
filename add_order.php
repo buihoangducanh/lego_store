@@ -9,7 +9,12 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
-
+// lấy dữ liệu từ form
+if (isset($_POST["submit"])) {
+    $receiverName = $_POST["receiverName"];
+    $receiverPhoneNumber = $_POST["receiverPhoneNumber"];
+    $receiverAddress = $_POST["receiverAddress"];
+}
 
 $user_id = $_SESSION['user_id'];
 
@@ -34,8 +39,11 @@ foreach ($cart as $productId => $info) {
 
 $status = "Processing";
 // Thêm thông tin đơn hàng vào bảng "orders"
-$insertOrderQuery = "INSERT INTO orders (userId, total, createdDate, status) 
-                     VALUES ('$user_id', '$totalPrice', NOW(), '$status')";
+$insertOrderQuery = "INSERT INTO orders (userId, total, createdDate, status,
+receiverName,receiverPhoneNumber,receiverAddress) 
+                     VALUES ('$user_id', '$totalPrice', NOW(), '$status',
+                    '$receiverName',
+                    '$receiverPhoneNumber','$receiverAddress')";
 mysqli_query($conn, $insertOrderQuery);
 $order_id = mysqli_insert_id($conn); // Lấy ID của đơn hàng vừa được tạo
 

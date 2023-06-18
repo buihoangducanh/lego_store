@@ -20,11 +20,6 @@
     $order_query = "SELECT * FROM orders WHERE id = $orderId";
     $order_result = mysqli_fetch_assoc(mysqli_query($conn, $order_query));
 
-    // Truy vấn và lấy thông tin người dùng từ bảng users
-    $userId = $order_result['userId'];
-    $user_query = "SELECT fullname, address, phone_number FROM users WHERE id = $userId";
-    $user_result = mysqli_fetch_assoc(mysqli_query($conn, $user_query));
-
     // Truy vấn và lấy danh sách sản phẩm trong đơn đặt hàng
     $product_query = "SELECT * FROM order_details WHERE orderId = $orderId";
     $product_result = mysqli_query($conn, $product_query);
@@ -46,9 +41,9 @@
     </div>
     <div class="container">
         <div style="padding: 20px 10px">
-            <p>Tên khách hàng : <span><?= $user_result['fullname'] ?></span></p>
-            <p>Địa chỉ : <span><?= $user_result['address'] ?></span></p>
-            <p>Số điện thoại : <span><?= $user_result['phone_number'] ?></span></p>
+            <p>Tên khách hàng : <span><?= $order_result['receiverName'] ?></span></p>
+            <p>Địa chỉ : <span><?= $order_result['receiverAddress'] ?></span></p>
+            <p>Số điện thoại : <span><?= $order_result['receiverPhoneNumber'] ?></span></p>
             <p>Tổng giá trị đơn hàng : <span><?= number_format($order_result['total'], 0, '', ',') ?></span> VND</p>
         </div>
         <?php
@@ -62,11 +57,20 @@
                     <th class="text-center p-2">Số lượng</th>
                 </tr>
                 <?php $count = 1;
-                foreach ($result as $value) { ?>
+                foreach ($result as $value) {
+
+                    $productId = $value["productId"];
+                    $query = "SELECT * FROM products WHERE id = $productId";
+                    $res  = mysqli_query($conn, $query);
+                    if ($res) {
+                        $product = mysqli_fetch_assoc($res);
+                    }
+
+                ?>
                     <tr>
                         <td><?= $count++ ?></td>
-                        <td><?= $value['productName'] ?></td>
-                        <td><img class="image-cart" src="uploads/<?= $value['productImage'] ?>" alt=""></td>
+                        <td><?= $product['name'] ?></td>
+                        <td><img class="image-cart" src="uploads/<?= $product['image'] ?>" alt=""></td>
                         <td><?= number_format($value['productPrice'], 0, '', ',') ?> VND</td>
                         <td><?= $value['qty'] ?></td>
                     </tr>

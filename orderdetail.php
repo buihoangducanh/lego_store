@@ -14,13 +14,6 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Lấy thông tin khách hàng từ CSDL
-$userId = $_SESSION['user_id'];
-$query = "SELECT * FROM users WHERE id = $userId";
-$result = mysqli_query($conn, $query);
-$userInfo = mysqli_fetch_assoc($result);
-
-
 // lấy thông tin đơn hàng
 $orderId = $_GET['orderId'];
 $query = "SELECT * FROM orders WHERE id = $orderId";
@@ -51,9 +44,9 @@ $itemsList = mysqli_query($conn, $query);
     </div>
     <div style="min-height: 50vh;">
         <div style="padding: 20px 100px">
-            <p>Tên khách hàng : <span><?= $userInfo['fullname'] ?></span></p>
-            <p>Địa chỉ : <span><?= $userInfo['address'] ?></span></p>
-            <p>Số điện thoại : <span><?= $userInfo['phone_number'] ?></span></p>
+            <p>Tên khách hàng : <span><?= $order['receiverName'] ?></span></p>
+            <p>Địa chỉ : <span><?= $order['receiverAddress'] ?></span></p>
+            <p>Số điện thoại : <span><?= $order['receiverPhoneNumber'] ?></span></p>
             <p>Tổng giá trị đơn hàng : <span><?= number_format($order['total'], 0, '', ',') ?></span>VND</p>
 
         </div>
@@ -68,11 +61,22 @@ $itemsList = mysqli_query($conn, $query);
                 </tr>
                 <?php
                 $count = 1;
-                while ($item = mysqli_fetch_assoc($itemsList)) { ?>
+                while ($item = mysqli_fetch_assoc($itemsList)) {
+                    $productId = $item["productId"];
+                    $query = "SELECT * FROM products WHERE id = $productId";
+                    $res  = mysqli_query($conn, $query);
+                    if ($res) {
+                        $product = mysqli_fetch_assoc($res);
+                    }
+
+                ?>
                     <tr>
                         <td><?= $count++ ?></td>
-                        <td><?= $item['productName'] ?></td>
-                        <td><img class="image-cart" src="admin/uploads/<?= $item['productImage'] ?>" alt=""></td>
+
+                        <td><?= $product['name'] ?></td>
+                        <td><img class="image-cart" src="admin/uploads/<?= $product['image'] ?>" alt=""></td>
+
+
                         <td><?= number_format($item['productPrice'], 0, '', ',') ?>VND</td>
                         <td><?= $item['qty'] ?></td>
                     </tr>

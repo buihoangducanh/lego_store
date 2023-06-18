@@ -2,7 +2,7 @@
 session_start();
 require 'util/connectDB.php'; // Kết nối đến cơ sở dữ liệu
 
-// Lấy giá trị của $id từ URL hoặc bất kỳ nguồn dữ liệu nào khác
+// Lấy giá trị của $id từ URL 
 $id = $_GET['id'];
 
 // Truy vấn lấy chi tiết sản phẩm theo id
@@ -13,7 +13,7 @@ $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) == 1) {
     $result = mysqli_fetch_assoc($result);
 } else {
-    // Xử lý tương ứng nếu sản phẩm không tồn tại (ví dụ: chuyển hướng về trang 404)
+    // Xử lý tương ứng nếu sản phẩm không tồn tại 
     header("Location: 404.php");
     exit();
 }

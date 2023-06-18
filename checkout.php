@@ -127,24 +127,27 @@ if ($cart) {
             <div class="orderinfo">
                 <div class="buy">
                     <h3>Thông tin đơn đặt hàng</h3>
-                    <div>
-                        Người đặt hàng: <b><?= $user_fullname ?></b>
-                    </div>
-                    <div>
-                        Số lượng: <b id="qtycart"><?= $totalQty ?></b>
-                    </div>
-                    <div>
-                        Tổng tiền: <b id="totalcart"><?= number_format($totalPrice, 0, '', ',') ?>VND</b>
-                    </div>
-                    <div>
-                        Số điện thoại: <b><?= $userInfo['phone_number'] ?></b>
-                    </div>
-                    <div>
-                        Địa chỉ nhận hàng: <b><?= $userInfo['address'] ?></b>
-                    </div>
-                    <div class="buy-btn">
-                        <a href="add_order.php">Tiến hành đặt hàng</a>
-                    </div>
+                    <form action="add_order.php" method="POST">
+                        <div>
+                            Người đặt hàng: <input type="text" name="receiverName" value="<?= $user_fullname ?>" required>
+                        </div>
+                        <div>
+                            Số lượng: <b id="qtycart"><?= $totalQty ?></b>
+                        </div>
+                        <div>
+                            Tổng tiền: <b id="totalcart"><?= number_format($totalPrice, 0, '', ',') ?>VND</b>
+                        </div>
+                        <div>
+                            Số điện thoại: <input type="text" name="receiverPhoneNumber" pattern="[0-9]{10}" value="<?= $userInfo['phone_number'] ?>" required>
+                        </div>
+                        <div>
+                            Địa chỉ nhận hàng: <input type="text" name="receiverAddress" value="<?= $userInfo['address'] ?>" required>
+                        </div>
+
+                        <div>
+                            <button class="buy-btn" value="submit" name="submit" type="submit">Tiến hành đặt hàng</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         <?php } else { ?>
